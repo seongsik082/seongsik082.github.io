@@ -1,0 +1,30 @@
+title: "김성식 기술 블로그"
+description: "백엔드 개발자로서 배운 것, 만든 것, 해결한 것을 기록합니다."
+url: ""
+baseurl: ""
+author:
+  name: "김성식"
+  role: "Backend Developer"
+  email: "tjdtlr991210@gmail.com"
+  github: "seongsik082"
+
+lang: ko-KR
+timezone: Asia/Seoul
+permalink: /posts/:title/
+
+markdown: kramdown
+highlighter: rouge
+
+collections:
+  projects:
+    output: false
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+
+exclude:
+  - README.md
