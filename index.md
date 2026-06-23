@@ -48,7 +48,7 @@ title: Home
       <article class="post-row">
         <a href="{{ post.url | relative_url }}">
           <div class="post-row-body">
-            <div class="post-tags">
+            <div class="post-category">
               {% for tag in post.tags limit: 2 %}
                 <span>{{ tag }}</span>
               {% endfor %}

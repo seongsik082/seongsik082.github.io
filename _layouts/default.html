@@ -13,5 +13,14 @@
       {{ content }}
     </main>
     {% include footer.html %}
+    <script>
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") document.documentElement.classList.add("dark");
+
+      document.querySelector(".theme-toggle")?.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark");
+        localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+      });
+    </script>
   </body>
 </html>
