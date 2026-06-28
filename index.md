@@ -5,9 +5,9 @@ title: Home
 
 <section class="home-hero">
   <div class="home-hero-inner">
-    <p class="eyebrow">Backend Engineering Blog</p>
-    <h1>서버 사이드 문제를 기록하고, 다시 설명합니다.</h1>
-    <p>Java, Spring, Network, Database를 중심으로 백엔드 개발의 기본기와 문제 해결 과정을 남깁니다.</p>
+    <p class="eyebrow">Backend Developer Blog</p>
+    <h1>백엔드 개발을 차근차근 기록합니다.</h1>
+    <p>Java, Spring, Network, Database를 공부하며 배운 개념과 문제 해결 과정을 정리합니다.</p>
   </div>
 </section>
 

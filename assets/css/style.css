@@ -149,8 +149,8 @@ h3 {
 
 .home-hero {
   width: 100vw;
-  min-height: 390px;
-  margin: -64px 0 58px calc(50% - 50vw);
+  min-height: 340px;
+  margin: -64px 0 52px calc(50% - 50vw);
   display: flex;
   align-items: center;
   background:
@@ -160,7 +160,7 @@ h3 {
 }
 
 .home-hero-inner {
-  width: min(960px, calc(100% - 40px));
+  width: min(860px, calc(100% - 48px));
   margin: 0 auto;
 }
 
@@ -169,19 +169,19 @@ h3 {
 }
 
 .home-hero h1 {
-  max-width: 760px;
-  margin-bottom: 18px;
-  font-size: clamp(38px, 5vw, 60px);
+  max-width: 680px;
+  margin-bottom: 16px;
+  font-size: clamp(34px, 5vw, 52px);
   font-weight: 850;
-  line-height: 1.16;
+  line-height: 1.18;
   text-shadow: 0 4px 18px rgba(0, 0, 0, 0.34);
 }
 
 .home-hero p:last-child {
-  max-width: 680px;
+  max-width: 640px;
   margin: 0;
   color: rgba(255, 255, 255, 0.92);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.26);
 }
@@ -195,7 +195,7 @@ h3 {
 .profile-intro h2 {
   max-width: 720px;
   margin-bottom: 14px;
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: clamp(26px, 3.2vw, 36px);
   font-weight: 850;
 }
 
@@ -643,7 +643,7 @@ section + section {
   }
 
   .home-hero {
-    min-height: 340px;
+    min-height: 300px;
     margin-top: -42px;
     margin-bottom: 46px;
   }
