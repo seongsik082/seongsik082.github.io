@@ -291,7 +291,8 @@ h3 {
 .resume-items article {
   display: grid;
   grid-template-columns: 48px 1fr;
-  gap: 16px;
+  column-gap: 16px;
+  row-gap: 4px;
   padding: 22px 0;
   border-top: 1px solid var(--line);
 }
@@ -307,11 +308,13 @@ h3 {
 }
 
 .resume-items h3 {
+  grid-column: 2;
   margin-bottom: 4px;
   font-size: 21px;
 }
 
 .resume-items p {
+  grid-column: 2;
   margin: 0;
   color: var(--muted);
 }
@@ -703,6 +706,10 @@ section + section {
   .profile-intro,
   .resume-preview {
     grid-template-columns: 1fr;
+  }
+
+  .resume-items article {
+    grid-template-columns: 40px 1fr;
   }
 
   .profile-mark {
