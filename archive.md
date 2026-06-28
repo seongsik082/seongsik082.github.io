@@ -15,6 +15,9 @@ permalink: /posts/
   <select id="categoryFilter" aria-label="카테고리">
     <option value="all">카테고리</option>
     <option value="Backend">Backend</option>
+    <option value="Network">Network</option>
+    <option value="Java">Java</option>
+    <option value="HTTP">HTTP</option>
     <option value="Writing">Writing</option>
     <option value="Project">Project</option>
     <option value="Retrospect">Retrospect</option>
@@ -27,8 +30,10 @@ permalink: /posts/
 
 <section class="post-categories" aria-label="Post tags">
   <button type="button" data-tag="Backend">#Backend</button>
+  <button type="button" data-tag="Network">#Network</button>
   <button type="button" data-tag="Spring">#Spring</button>
   <button type="button" data-tag="Java">#Java</button>
+  <button type="button" data-tag="HTTP">#HTTP</button>
   <button type="button" data-tag="Database">#Database</button>
   <button type="button" data-tag="API">#API</button>
   <button type="button" data-tag="JPA">#JPA</button>
