@@ -5,24 +5,29 @@ title: Home
 
 <section class="home-hero">
   <div class="home-hero-inner">
-    <p class="eyebrow">Backend Developer · 김성식</p>
-    <h1>김성식의 기술 블로그</h1>
-    <p>Be steady, Be reliable, Be better.</p>
+    <p class="eyebrow">Backend Engineering Blog</p>
+    <h1>서버 사이드 문제를 기록하고, 다시 설명합니다.</h1>
+    <p>Java, Spring, Network, Database를 중심으로 백엔드 개발의 기본기와 문제 해결 과정을 남깁니다.</p>
   </div>
 </section>
 
 <section class="profile-intro">
-  <div class="profile-mark" aria-hidden="true">S</div>
+  <aside class="profile-card">
+    <div class="profile-mark" aria-hidden="true">S</div>
+    <strong>김성식</strong>
+    <span>Backend Developer</span>
+    <a href="https://github.com/seongsik082">github.com/seongsik082</a>
+  </aside>
   <div>
-    <p class="section-label">Manifesto</p>
-    <h2>문제를 끝까지 추적하고, 이해한 만큼 단순하게 구현하려고 합니다.</h2>
+    <p class="section-label">About</p>
+    <h2>문제를 작게 나누고, 동작 원리를 이해한 뒤 구현합니다.</h2>
     <p>
-      Java, Spring Boot, 데이터베이스, 인프라를 중심으로 서비스의 핵심 흐름을 만들고 기록합니다.
-      만든 것보다 왜 그렇게 만들었는지, 어디서 막혔고 어떻게 풀었는지를 남기는 블로그입니다.
+      이 블로그는 백엔드 개발자로 공부하고 구현하면서 마주친 개념과 시행착오를 정리하는 공간입니다.
+      네트워크, Java, HTTP, 데이터베이스처럼 서버 개발의 바닥을 이루는 주제를 차근차근 기록합니다.
     </p>
     <div class="hero-actions">
       <a href="/posts/">Posts</a>
-      <a href="/projects/">Resume</a>
+      <a href="/projects/">Projects</a>
       <a href="https://github.com/seongsik082">GitHub</a>
     </div>
   </div>
@@ -68,24 +73,24 @@ title: Home
 
 <section class="home-section resume-preview">
   <div>
-    <div class="section-kicker">Resume</div>
-    <h2>백엔드 개발자로 보여주고 싶은 것</h2>
+    <div class="section-kicker">Study Map</div>
+    <h2>앞으로 채워갈 백엔드 기록</h2>
   </div>
   <div class="resume-items">
     <article>
       <span>01</span>
-      <h3>API와 도메인 설계</h3>
-      <p>요구사항을 요청 흐름, 데이터 모델, 예외 처리 기준으로 나누어 정리합니다.</p>
+      <h3>Java와 Spring</h3>
+      <p>문법, 객체지향, Spring MVC, 예외 처리, 테스트 코드를 학습 노트로 정리합니다.</p>
     </article>
     <article>
       <span>02</span>
-      <h3>데이터와 성능</h3>
-      <p>쿼리, 인덱스, 캐시 적용 기준을 실험과 기록으로 남깁니다.</p>
+      <h3>Network와 HTTP</h3>
+      <p>요청이 서버에 도착하는 과정, 상태 코드, API 설계 기준을 백엔드 관점에서 기록합니다.</p>
     </article>
     <article>
       <span>03</span>
-      <h3>배포와 운영</h3>
-      <p>Docker, CI/CD, 로그를 통해 고칠 수 있는 서비스를 지향합니다.</p>
+      <h3>Database와 운영</h3>
+      <p>쿼리, 인덱스, 트랜잭션, 배포 자동화, 로그를 실제 문제 해결과 연결해 정리합니다.</p>
     </article>
   </div>
 </section>

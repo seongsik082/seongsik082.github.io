@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
 :root {
   --bg: #ffffff;
   --text: #222222;
@@ -33,7 +35,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   line-height: 1.72;
 }
 
@@ -48,17 +50,17 @@ a:hover {
 
 .site-footer,
 .site-main {
-  width: min(860px, calc(100% - 40px));
+  width: min(960px, calc(100% - 40px));
   margin: 0 auto;
 }
 
 .site-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 240px;
-  min-height: 70px;
-  padding: 0 max(20px, calc((100vw - 860px) / 2));
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 68px;
+  padding: 0 max(20px, calc((100vw - 960px) / 2));
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);
   position: sticky;
@@ -69,8 +71,8 @@ a:hover {
 
 .site-logo {
   color: var(--accent);
-  font-size: 21px;
-  font-weight: 950;
+  font-size: 20px;
+  font-weight: 900;
   line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -81,10 +83,10 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
   color: #3f3f44;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 750;
 }
 
 :root.dark .site-nav {
@@ -147,8 +149,8 @@ h3 {
 
 .home-hero {
   width: 100vw;
-  min-height: 430px;
-  margin: -64px 0 64px calc(50% - 50vw);
+  min-height: 390px;
+  margin: -64px 0 58px calc(50% - 50vw);
   display: flex;
   align-items: center;
   background:
@@ -158,7 +160,7 @@ h3 {
 }
 
 .home-hero-inner {
-  width: min(860px, calc(100% - 40px));
+  width: min(960px, calc(100% - 40px));
   margin: 0 auto;
 }
 
@@ -167,49 +169,73 @@ h3 {
 }
 
 .home-hero h1 {
-  margin-bottom: 16px;
-  font-size: clamp(44px, 7vw, 76px);
-  font-weight: 950;
-  line-height: 1.1;
+  max-width: 760px;
+  margin-bottom: 18px;
+  font-size: clamp(38px, 5vw, 60px);
+  font-weight: 850;
+  line-height: 1.16;
   text-shadow: 0 4px 18px rgba(0, 0, 0, 0.34);
 }
 
 .home-hero p:last-child {
+  max-width: 680px;
   margin: 0;
   color: rgba(255, 255, 255, 0.92);
-  font-size: 21px;
-  font-weight: 750;
+  font-size: 18px;
+  font-weight: 600;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.26);
 }
 
 .profile-intro {
   display: grid;
-  grid-template-columns: 112px 1fr;
-  gap: 34px;
+  grid-template-columns: 260px 1fr;
+  gap: 48px;
   align-items: start;
-  padding-bottom: 56px;
+  padding-bottom: 58px;
   border-bottom: 1px solid var(--line);
+}
+
+.profile-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--soft), transparent);
 }
 
 .profile-mark {
   display: grid;
-  width: 112px;
-  height: 112px;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 10px;
   place-items: center;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), #1d2f56);
+  border-radius: 18px;
+  background: var(--accent);
   color: #ffffff;
-  font-size: 54px;
-  font-weight: 950;
-  box-shadow: 0 18px 45px rgba(39, 66, 126, 0.22);
+  font-size: 38px;
+  font-weight: 900;
+  box-shadow: 0 14px 34px rgba(39, 66, 126, 0.18);
   transform: skew(-5deg);
+}
+
+.profile-card strong {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.profile-card span,
+.profile-card a {
+  color: var(--muted);
+  font-size: 14px;
 }
 
 .profile-intro h2 {
   max-width: 720px;
   margin-bottom: 14px;
-  font-size: clamp(30px, 4vw, 44px);
-  font-weight: 900;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 850;
 }
 
 .profile-intro p {
@@ -279,8 +305,8 @@ h3 {
 
 .resume-preview {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 34px;
+  grid-template-columns: 280px 1fr;
+  gap: 48px;
 }
 
 .resume-items {
@@ -698,7 +724,7 @@ section + section {
   }
 
   .home-hero {
-    min-height: 360px;
+    min-height: 340px;
     margin-top: -42px;
     margin-bottom: 46px;
   }
@@ -712,10 +738,14 @@ section + section {
     grid-template-columns: 40px 1fr;
   }
 
+  .profile-card {
+    padding: 20px;
+  }
+
   .profile-mark {
-    width: 88px;
-    height: 88px;
-    font-size: 42px;
+    width: 64px;
+    height: 64px;
+    font-size: 34px;
   }
 
   .posts-hero {
