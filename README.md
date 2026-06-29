@@ -75,6 +75,21 @@ scripts/new_post.sh \
 
 이 스크립트는 `_posts/` 아래에 새 파일을 만들고, 실행 시각보다 5분 이른 `Asia/Seoul` 기준 시간을 넣습니다.
 또한 `Backend` 태그를 자동으로 포함하고, 실무형 글 구조 초안을 함께 생성합니다.
+필요하면 `POST_OFFSET_MINUTES=7 scripts/new_post.sh ...`처럼 시간 오프셋을 직접 조절할 수 있습니다.
+
+하루치 3개 초안을 한 번에 만들려면 아래 배치 스크립트를 사용할 수 있습니다.
+
+```bash
+cat > /tmp/daily-posts-plan.txt <<'EOF'
+JVM 스레드 덤프를 어디부터 읽어야 하는가|jvm-thread-dump-first-pass|Java,Performance|스레드 덤프는 장애 원인을 좁히는 가장 빠른 단서가 될 수 있습니다.
+Spring 트랜잭션 전파가 서비스 경계를 흐리는 순간|spring-transaction-propagation-service-boundary|Spring,Database|전파 옵션은 코드 재사용보다 장애 범위를 먼저 바꿉니다.
+REST API에서 202 Accepted를 써야 하는 작업과 아닌 작업|rest-api-202-accepted-usage|REST API,HTTP|비동기 작업 응답은 상태 코드 하나로 끝나지 않고 조회 방식까지 함께 설계해야 합니다.
+EOF
+
+scripts/new_daily_posts.sh /tmp/daily-posts-plan.txt
+```
+
+이 배치 스크립트는 계획 파일의 3개 항목을 읽어 각각 7분 전, 6분 전, 5분 전 시각으로 초안을 생성합니다.
 
 포스트 규칙 검증은 아래 스크립트로 할 수 있습니다.
 

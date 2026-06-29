@@ -32,15 +32,21 @@ if [[ ! "$slug" =~ ^[a-z0-9-]+$ ]]; then
 fi
 
 posts_dir="${POSTS_DIR:-_posts}"
+post_offset_minutes="${POST_OFFSET_MINUTES:-5}"
+
+if [[ ! "$post_offset_minutes" =~ ^[0-9]+$ ]]; then
+  echo "POST_OFFSET_MINUTES must be a non-negative integer." >&2
+  exit 1
+fi
 
 mkdir -p "$posts_dir"
 
-if date -v-5M "+%Y-%m-%d %H:%M:%S %z" >/dev/null 2>&1; then
-  post_datetime="$(TZ=Asia/Seoul date -v-5M "+%Y-%m-%d %H:%M:%S %z")"
-  post_date="$(TZ=Asia/Seoul date -v-5M "+%Y-%m-%d")"
+if date -v-"${post_offset_minutes}"M "+%Y-%m-%d %H:%M:%S %z" >/dev/null 2>&1; then
+  post_datetime="$(TZ=Asia/Seoul date -v-"${post_offset_minutes}"M "+%Y-%m-%d %H:%M:%S %z")"
+  post_date="$(TZ=Asia/Seoul date -v-"${post_offset_minutes}"M "+%Y-%m-%d")"
 else
-  post_datetime="$(TZ=Asia/Seoul date -d '5 minutes ago' "+%Y-%m-%d %H:%M:%S %z")"
-  post_date="$(TZ=Asia/Seoul date -d '5 minutes ago' "+%Y-%m-%d")"
+  post_datetime="$(TZ=Asia/Seoul date -d "${post_offset_minutes} minutes ago" "+%Y-%m-%d %H:%M:%S %z")"
+  post_date="$(TZ=Asia/Seoul date -d "${post_offset_minutes} minutes ago" "+%Y-%m-%d")"
 fi
 
 trimmed_tags="$(printf '%s' "$raw_tags" | sed 's/[[:space:]]*,[[:space:]]*/,/g; s/^,*//; s/,*$//')"
