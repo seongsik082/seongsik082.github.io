@@ -108,6 +108,14 @@ ruby scripts/suggest_daily_topics.rb
 이 스크립트는 `_data/daily_topic_pool.yml`의 후보를 기준으로 최근 7일 글과 기존 slug/title을 보고 3개 주제를 추천합니다.
 출력 마지막의 `Plan file lines`를 그대로 복사해 `scripts/new_daily_posts.sh` 입력 파일로 사용할 수 있습니다.
 
+추천부터 계획 파일 생성, 3개 초안 작성, 검증까지 한 번에 하려면 아래 스크립트를 사용할 수 있습니다.
+
+```bash
+scripts/prepare_daily_posts.sh
+```
+
+이 스크립트는 `/tmp/daily-posts-plan-*.txt` 계획 파일을 만들고, 그 내용을 기준으로 `_posts/`에 3개 초안을 생성한 뒤 `ruby scripts/check_posts.rb`까지 실행합니다.
+
 예시:
 
 ```md
