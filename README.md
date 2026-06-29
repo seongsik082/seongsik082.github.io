@@ -63,6 +63,19 @@ Ruby 3 계열에서 `webrick` 관련 오류가 나는 경우가 있어 `Gemfile`
 - 정의만 나열하지 말고 적용 기준과 운영 체크포인트를 함께 적기
 - GitHub Pages 목록 노출을 위해 미래 시각 포스트를 만들지 않기
 
+초안 생성을 빠르게 하려면 아래 스크립트를 사용할 수 있습니다.
+
+```bash
+scripts/new_post.sh \
+  "트랜잭션 경계가 서비스 설계에 주는 영향" \
+  "transaction-boundary-service-design" \
+  "Spring,Database" \
+  "트랜잭션 경계는 코드 구조와 장애 범위를 함께 바꿉니다."
+```
+
+이 스크립트는 `_posts/` 아래에 새 파일을 만들고, 실행 시각보다 5분 이른 `Asia/Seoul` 기준 시간을 넣습니다.
+또한 `Backend` 태그를 자동으로 포함하고, 실무형 글 구조 초안을 함께 생성합니다.
+
 예시:
 
 ```md
