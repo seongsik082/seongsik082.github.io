@@ -21,7 +21,30 @@ def load_front_matter(path)
   YAML.load(match[1]) || {}
 end
 
+def build_category_tags(pool)
+  pool.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |candidate, hash|
+    category = normalize(candidate["category"])
+    tag = normalize(candidate["tag"])
+    next if category.empty? || tag.empty?
+
+    hash[category] << tag unless hash[category].include?(tag)
+  end
+end
+
+def category_counts(posts, category_tags)
+  category_tags.each_with_object({}) do |(category, tags), hash|
+    hash[category] = posts.count do |post|
+      !(post[:tags] & tags).empty?
+    end
+  end
+end
+
+def tie_break_seed(date_key, slug)
+  "#{date_key}|#{slug}".each_byte.sum
+end
+
 pool = YAML.load_file(POOL_PATH)
+category_tags = build_category_tags(pool)
 posts = Dir.glob(File.join(POSTS_DIR, "*.md")).sort.map do |path|
   data = load_front_matter(path)
   {
@@ -37,15 +60,16 @@ end
 now = Time.now
 recent_cutoff = now - (RECENT_DAYS * 24 * 60 * 60)
 recent_posts = posts.select { |post| post[:time] >= recent_cutoff }
+date_key = now.getlocal("+09:00").strftime("%Y-%m-%d")
 
 used_titles = posts.map { |post| post[:title] }.to_set
 used_slugs = posts.map { |post| post[:slug] }.to_set
 recent_tags = recent_posts.flat_map { |post| post[:tags] }.to_set
-recent_categories = recent_posts.flat_map do |post|
-  post[:tags].select do |tag|
-    %w[Java Spring JPA REST\ API HTTP Database Transaction Distributed\ Systems Observability Kubernetes Security AWS Redis Testing CI/CD].include?(tag)
-  end
-end.to_set
+overall_category_counts = category_counts(posts, category_tags)
+recent_categories = category_tags.each_with_object(Set.new) do |(category, tags), set|
+  set << category if recent_posts.any? { |post| !(post[:tags] & tags).empty? }
+end
+max_category_count = overall_category_counts.values.max || 0
 
 scored = pool.map do |candidate|
   title = normalize(candidate["title"])
@@ -60,6 +84,7 @@ scored = pool.map do |candidate|
   score += 3 unless recent_categories.include?(category)
   score += 2 unless recent_tags.include?(tag)
   score += 1 if category == tag
+  score += (max_category_count - overall_category_counts.fetch(category, 0))
 
   {
     category: category,
@@ -67,14 +92,16 @@ scored = pool.map do |candidate|
     title: title,
     slug: slug,
     excerpt: normalize(candidate["excerpt"]),
-    score: score
+    score: score,
+    category_count: overall_category_counts.fetch(category, 0),
+    tie_break: tie_break_seed(date_key, slug)
   }
 end.compact
 
 chosen = []
 used_categories = Set.new
 
-scored.sort_by { |item| [-item[:score], item[:category], item[:title]] }.each do |candidate|
+scored.sort_by { |item| [-item[:score], item[:category_count], item[:tie_break], item[:category], item[:title]] }.each do |candidate|
   next if used_categories.include?(candidate[:category])
 
   chosen << candidate
@@ -89,6 +116,7 @@ end
 
 puts "Recent posts within #{RECENT_DAYS} days: #{recent_posts.size}"
 puts "Recent tags: #{recent_tags.to_a.sort.join(', ')}"
+puts "Date seed: #{date_key}"
 puts
 puts "Suggested daily topics:"
 
@@ -97,6 +125,7 @@ chosen.each_with_index do |candidate, index|
   puts "   slug: #{candidate[:slug]}"
   puts "   tags: #{candidate[:tag]}, Backend"
   puts "   excerpt: #{candidate[:excerpt]}"
+  puts "   coverage: #{candidate[:category_count]} existing posts in this category"
 end
 
 puts
