@@ -49,10 +49,11 @@ Ruby 3 계열에서 `webrick` 관련 오류가 나는 경우가 있어 `Gemfile`
 현재 로컬 확인 환경이 Ruby `2.6.10`이어서, macOS에서 최신 `ffi` 플랫폼 gem 충돌을 피하기 위해 `Gemfile`에 `ffi ~> 1.16.3`도 함께 고정했습니다.
 만약 `bundle install`이 계속 실패한다면, 더 최신 Ruby 환경에서 다시 설치하거나 GitHub Pages gem README에 나온 Docker 방식도 검토하는 편이 안전합니다.
 
-## CI 빌드
+## 배포 방식
 
-저장소에는 [`.github/workflows/jekyll-build.yml`](.github/workflows/jekyll-build.yml) 워크플로가 포함되어 있습니다.
-GitHub Actions에서 Ruby `3.2` 기준으로 `bundle exec jekyll build`를 실행하므로, 로컬 Ruby 환경이 오래되어도 저장소 기준 빌드 성공 여부를 확인할 수 있습니다.
+이 저장소는 GitHub Pages가 `main` 브랜치 루트를 직접 읽어 빌드하고 배포합니다.
+즉, 별도의 GitHub Actions Jekyll 빌드 워크플로는 필수가 아닙니다.
+로컬에서 충분히 확인하고 `main`에 push하면 Pages 쪽 기본 빌드가 진행됩니다.
 
 ## 글 작성 규칙
 
@@ -81,6 +82,7 @@ bundle exec jekyll build
 ```
 
 로컬에 Jekyll이 아직 설치되지 않았다면 최소한 front matter와 날짜, 링크, 제목 중복은 확인하는 편이 좋습니다.
+현재처럼 로컬 Ruby가 오래된 환경에서는 `bundle exec jekyll build`보다 GitHub Pages 기본 빌드 결과를 기준으로 확인하는 편이 더 현실적일 수 있습니다.
 
 ## 다루는 주제 예시
 
