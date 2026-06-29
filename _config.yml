@@ -1,13 +1,20 @@
 title: "김성식 기술 블로그"
 description: "Java, Spring, Database, API, 운영 이슈를 백엔드 개발자 관점에서 정리하는 기술 블로그입니다."
-url: ""
+url: "https://seongsik082.github.io"
 baseurl: ""
+repository: "seongsik082/seongsik082.github.io"
+image: "/assets/images/posts-hero.png"
 author:
   name: "김성식"
   role: "Backend Developer"
   email: "tjdtlr991210@gmail.com"
   github: "seongsik082"
+  github_url: "https://github.com/seongsik082"
   focus: "Java, Spring Boot, Database, Observability"
+
+social:
+  links:
+    - "https://github.com/seongsik082"
 
 lang: ko-KR
 timezone: Asia/Seoul

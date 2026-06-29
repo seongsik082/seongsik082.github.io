@@ -2,12 +2,16 @@
 <html lang="ko">
   <head>
     {% assign page_title = page.title | default: site.title %}
-    {% assign meta_description = page.excerpt | default: page.description | default: site.description | strip_html | strip_newlines %}
+    {% assign meta_description = page.excerpt | default: page.description | default: site.description | strip_html | strip_newlines | replace: '  ', ' ' | strip %}
     {% assign canonical_url = page.url | absolute_url %}
+    {% assign social_image = page.image | default: site.image | absolute_url %}
+    {% assign author_profile = site.author.github_url | default: site.url %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
     <meta name="description" content="{{ meta_description }}">
+    <meta name="author" content="{{ site.author.name }}">
+    <meta name="theme-color" content="#5277c4">
     <link rel="canonical" href="{{ canonical_url }}">
     <meta property="og:locale" content="ko_KR">
     <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
@@ -15,17 +19,67 @@
     <meta property="og:title" content="{{ page_title }}">
     <meta property="og:description" content="{{ meta_description }}">
     <meta property="og:url" content="{{ canonical_url }}">
-    <meta property="og:image" content="{{ '/assets/images/posts-hero.png' | absolute_url }}">
+    <meta property="og:image" content="{{ social_image }}">
+    <meta property="og:image:alt" content="{{ page_title }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ page_title }}">
     <meta name="twitter:description" content="{{ meta_description }}">
-    <meta name="twitter:image" content="{{ '/assets/images/posts-hero.png' | absolute_url }}">
+    <meta name="twitter:image" content="{{ social_image }}">
     {% if page.layout == 'post' %}
       <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+      <meta property="article:author" content="{{ site.author.name }}">
       {% for tag in page.tags %}
         <meta property="article:tag" content="{{ tag }}">
       {% endfor %}
     {% endif %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        {% if page.layout == 'post' %}
+          "@type": "BlogPosting",
+          "headline": {{ page_title | jsonify }},
+          "description": {{ meta_description | jsonify }},
+          "url": {{ canonical_url | jsonify }},
+          "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
+          "dateModified": {{ page.date | date_to_xmlschema | jsonify }},
+          "inLanguage": {{ site.lang | jsonify }},
+          "image": {{ social_image | jsonify }},
+          "keywords": {{ page.tags | jsonify }},
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": {{ canonical_url | jsonify }}
+          },
+          "author": {
+            "@type": "Person",
+            "name": {{ site.author.name | jsonify }},
+            "url": {{ author_profile | jsonify }}
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": {{ site.author.name | jsonify }},
+            "url": {{ author_profile | jsonify }}
+          }
+        {% else %}
+          "@type": "WebSite",
+          "name": {{ site.title | jsonify }},
+          "description": {{ site.description | jsonify }},
+          "url": {{ site.url | jsonify }},
+          "inLanguage": {{ site.lang | jsonify }},
+          "image": {{ social_image | jsonify }},
+          "author": {
+            "@type": "Person",
+            "name": {{ site.author.name | jsonify }},
+            "url": {{ author_profile | jsonify }}
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": {{ site.author.name | jsonify }},
+            "url": {{ author_profile | jsonify }}
+          },
+          "sameAs": {{ site.social.links | jsonify }}
+        {% endif %}
+      }
+    </script>
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   </head>
   <body>
