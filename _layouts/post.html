@@ -2,6 +2,7 @@
 layout: default
 ---
 
+{% assign troubleshooting_paths = site.data.troubleshooting_paths %}
 {% assign primary_tag = "" %}
 {% if page.tags and page.tags.size > 0 %}
   {% assign primary_tag = page.tags | first %}
@@ -31,6 +32,20 @@ layout: default
         {% endfor %}
       </div>
     {% endif %}
+    {% assign matched_route_count = 0 %}
+    {% capture matched_route_links %}
+      {% for route in troubleshooting_paths %}
+        {% if route.slugs contains page.slug %}
+          {% assign matched_route_count = matched_route_count | plus: 1 %}
+          <a href="{{ '/troubleshooting/#' | append: route.key | relative_url }}">{{ route.label }}</a>
+        {% endif %}
+      {% endfor %}
+    {% endcapture %}
+    {% if matched_route_count > 0 %}
+      <div class="route-chip-list" aria-label="Troubleshooting routes">
+        {{ matched_route_links }}
+      </div>
+    {% endif %}
   </header>
 
   <div class="post-layout">
@@ -38,6 +53,17 @@ layout: default
       <div class="post-side-card" data-post-toc>
         <p class="section-label">이 글에서 다루는 내용</p>
       </div>
+      {% if matched_route_count > 0 %}
+        <div class="post-side-card">
+          <p class="section-label">도움이 되는 상황</p>
+          {% for route in troubleshooting_paths %}
+            {% if route.slugs contains page.slug %}
+              <a class="sidebar-link" href="{{ '/troubleshooting/#' | append: route.key | relative_url }}">{{ route.title }}</a>
+            {% endif %}
+          {% endfor %}
+          <a class="sidebar-link" href="{{ '/troubleshooting/' | relative_url }}">전체 troubleshooting 경로 보기</a>
+        </div>
+      {% endif %}
       {% if primary_tag != "" %}
         <div class="post-side-card">
           <p class="section-label">같은 주제 더 보기</p>

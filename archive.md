@@ -6,6 +6,7 @@ permalink: /posts/
 
 {% assign sorted_tags = site.tags | sort %}
 {% assign topic_paths = site.data.topic_paths %}
+{% assign troubleshooting_paths = site.data.troubleshooting_paths %}
 
 <section class="posts-hero">
   <div class="posts-hero-inner">
@@ -30,9 +31,24 @@ permalink: /posts/
   </a>
 </section>
 
+<section class="archive-guides" aria-label="Troubleshooting routes">
+  {% for route in troubleshooting_paths %}
+    <a class="archive-guide-card" href="{{ '/posts/' | relative_url }}?route={{ route.key }}">
+      <strong>{{ route.label }}</strong>
+      <span>{{ route.title }}</span>
+    </a>
+  {% endfor %}
+</section>
+
 <section class="topic-shortcuts" aria-label="Main topics">
   {% for topic in topic_paths %}
     <button type="button" data-topic-filter="{{ topic.key }}" data-topic-label="{{ topic.label }}">{{ topic.label }}</button>
+  {% endfor %}
+</section>
+
+<section class="topic-shortcuts route-shortcuts" aria-label="Troubleshooting filters">
+  {% for route in troubleshooting_paths %}
+    <button type="button" data-route-filter="{{ route.key }}" data-route-label="{{ route.label }}">{{ route.label }}</button>
   {% endfor %}
 </section>
 
@@ -67,7 +83,8 @@ permalink: /posts/
 <section class="archive-list">
   {% for post in site.posts %}
     {% capture topic_keys %}{% for topic in topic_paths %}{% assign matches_topic = false %}{% for tag in topic.tags %}{% if post.tags contains tag %}{% assign matches_topic = true %}{% break %}{% endif %}{% endfor %}{% if matches_topic %}{{ topic.key }}|{% endif %}{% endfor %}{% endcapture %}
-    <article class="post-row" data-title="{{ post.title | escape }}" data-excerpt="{{ post.excerpt | strip_html | escape }}" data-tags="{{ post.tags | join: ',' }}" data-topics="{{ topic_keys | strip }}">
+    {% capture route_keys %}{% for route in troubleshooting_paths %}{% if route.slugs contains post.slug %}{{ route.key }}|{% endif %}{% endfor %}{% endcapture %}
+    <article class="post-row" data-title="{{ post.title | escape }}" data-excerpt="{{ post.excerpt | strip_html | escape }}" data-tags="{{ post.tags | join: ',' }}" data-topics="{{ topic_keys | strip }}" data-routes="{{ route_keys | strip }}">
       <a href="{{ post.url | relative_url }}">
         <div class="post-row-body">
           <div class="post-category">
@@ -75,6 +92,15 @@ permalink: /posts/
               <span>{{ tag }}</span>
             {% endfor %}
           </div>
+          {% if route_keys != blank %}
+            <div class="route-chip-list in-row">
+              {% for route in troubleshooting_paths %}
+                {% if route.slugs contains post.slug %}
+                  <span>{{ route.label }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
           <h2>{{ post.title }}</h2>
           <p>{{ post.excerpt | strip_html | truncate: 145 }}</p>
         </div>
@@ -91,6 +117,7 @@ permalink: /posts/
   const categoryFilter = document.querySelector("#categoryFilter");
   const resetFiltersButton = document.querySelector("#resetFilters");
   const topicButtons = [...document.querySelectorAll("[data-topic-filter]")];
+  const routeButtons = [...document.querySelectorAll("[data-route-filter]")];
   const tagButtons = [...document.querySelectorAll("[data-tag]")];
   const posts = [...document.querySelectorAll(".post-row")];
   const count = document.querySelector("#visiblePostCount");
@@ -98,6 +125,7 @@ permalink: /posts/
   const filterStatus = document.querySelector("#filterStatus");
   const params = new URLSearchParams(window.location.search);
   let activeTopic = "";
+  let activeRoute = "";
   let activeTag = "";
 
   function normalize(value) {
@@ -119,6 +147,7 @@ permalink: /posts/
     const next = new URLSearchParams();
     if (searchInput.value.trim()) next.set("q", searchInput.value.trim());
     if (activeTopic) next.set("topic", activeTopic);
+    if (activeRoute) next.set("route", activeRoute);
     if (categoryFilter.value !== "all") next.set("category", categoryFilter.value);
     if (activeTag) next.set("tag", activeTag);
     const query = next.toString();
@@ -130,6 +159,7 @@ permalink: /posts/
     const keyword = normalize(searchInput.value);
     const category = categoryFilter.value;
     const activeTopicButton = topicButtons.find((item) => item.dataset.topicFilter === activeTopic);
+    const activeRouteButton = routeButtons.find((item) => item.dataset.routeFilter === activeRoute);
     let visible = 0;
     const summary = [];
 
@@ -137,11 +167,13 @@ permalink: /posts/
       const text = normalize(`${post.dataset.title} ${post.dataset.excerpt}`);
       const tags = parseTags(post.dataset.tags);
       const topics = parseTags(post.dataset.topics);
+      const routes = parseTags(post.dataset.routes);
       const matchesKeyword = !keyword || text.includes(keyword);
       const matchesTopic = !activeTopic || topics.includes(activeTopic);
+      const matchesRoute = !activeRoute || routes.includes(activeRoute);
       const matchesCategory = category === "all" || tags.includes(category);
       const matchesTag = !activeTag || tags.includes(activeTag);
-      const show = matchesKeyword && matchesTopic && matchesCategory && matchesTag;
+      const show = matchesKeyword && matchesTopic && matchesRoute && matchesCategory && matchesTag;
 
       post.hidden = !show;
       if (show) visible += 1;
@@ -151,6 +183,7 @@ permalink: /posts/
     emptyState.hidden = visible !== 0;
 
     if (activeTopic) summary.push(`주제: ${activeTopicButton?.dataset.topicLabel || activeTopic}`);
+    if (activeRoute) summary.push(`증상: ${activeRouteButton?.dataset.routeLabel || activeRoute}`);
     if (category !== "all") summary.push(`카테고리: ${category}`);
     if (activeTag) summary.push(`태그: #${activeTag}`);
     if (searchInput.value.trim()) summary.push(`검색: "${searchInput.value.trim()}"`);
@@ -165,8 +198,10 @@ permalink: /posts/
     searchInput.value = "";
     categoryFilter.value = "all";
     activeTopic = "";
+    activeRoute = "";
     activeTag = "";
     topicButtons.forEach((item) => item.classList.remove("is-active"));
+    routeButtons.forEach((item) => item.classList.remove("is-active"));
     tagButtons.forEach((item) => item.classList.remove("is-active"));
     applyFilters();
   });
@@ -174,6 +209,13 @@ permalink: /posts/
     button.addEventListener("click", () => {
       activeTopic = activeTopic === button.dataset.topicFilter ? "" : button.dataset.topicFilter;
       topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
+      applyFilters();
+    });
+  });
+  routeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeRoute = activeRoute === button.dataset.routeFilter ? "" : button.dataset.routeFilter;
+      routeButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.routeFilter === activeRoute));
       applyFilters();
     });
   });
@@ -191,6 +233,13 @@ permalink: /posts/
     if (topicButtons.some((item) => item.dataset.topicFilter === requestedTopic)) {
       activeTopic = requestedTopic;
       topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
+    }
+  }
+  if (params.get("route")) {
+    const requestedRoute = params.get("route");
+    if (routeButtons.some((item) => item.dataset.routeFilter === requestedRoute)) {
+      activeRoute = requestedRoute;
+      routeButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.routeFilter === activeRoute));
     }
   }
   if (params.get("category") && hasOption(categoryFilter, params.get("category"))) {

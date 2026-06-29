@@ -513,6 +513,10 @@ section + section {
   margin-top: 24px;
 }
 
+.route-shortcuts + .post-controls {
+  margin-top: 24px;
+}
+
 .filter-note + .post-categories {
   margin-top: 24px;
 }
@@ -557,6 +561,11 @@ section + section {
   margin: 0 auto 18px;
 }
 
+.route-shortcuts {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
 .post-categories button {
   border: 0;
   background: var(--accent-soft);
@@ -580,6 +589,31 @@ section + section {
   border-color: var(--accent);
   background: var(--accent);
   color: #ffffff;
+}
+
+.route-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.route-chip-list a,
+.route-chip-list span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(82, 119, 196, 0.12);
+  color: var(--accent);
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.route-chip-list.in-row {
+  margin-top: 2px;
+  margin-bottom: 8px;
 }
 
 .post-categories button.is-active,
