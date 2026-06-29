@@ -99,6 +99,15 @@ ruby scripts/check_posts.rb
 
 이 스크립트는 파일명 형식, 필수 front matter, 중복 제목, 중복 slug, 미래 날짜, 파일명 날짜와 front matter 날짜 불일치를 점검합니다.
 
+하루치 주제를 최근 글과 겹치지 않게 고르는 보조 스크립트도 있습니다.
+
+```bash
+ruby scripts/suggest_daily_topics.rb
+```
+
+이 스크립트는 `_data/daily_topic_pool.yml`의 후보를 기준으로 최근 7일 글과 기존 slug/title을 보고 3개 주제를 추천합니다.
+출력 마지막의 `Plan file lines`를 그대로 복사해 `scripts/new_daily_posts.sh` 입력 파일로 사용할 수 있습니다.
+
 예시:
 
 ```md
