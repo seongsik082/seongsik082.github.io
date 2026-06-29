@@ -484,7 +484,11 @@ section + section {
   margin-top: 0;
 }
 
-.archive-guides + .post-controls {
+.archive-guides + .topic-shortcuts {
+  margin-top: 24px;
+}
+
+.topic-shortcuts + .post-controls {
   margin-top: 24px;
 }
 
@@ -501,14 +505,16 @@ section + section {
 }
 
 .post-category,
-.post-categories {
+.post-categories,
+.topic-shortcuts {
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
 }
 
 .post-category span,
-.post-categories button {
+.post-categories button,
+.topic-shortcuts button {
   display: inline-flex;
   min-height: 28px;
   align-items: center;
@@ -525,6 +531,11 @@ section + section {
   margin: 24px auto 0;
 }
 
+.topic-shortcuts {
+  max-width: 660px;
+  margin: 0 auto 18px;
+}
+
 .post-categories button {
   border: 0;
   background: var(--accent-soft);
@@ -532,6 +543,22 @@ section + section {
   cursor: pointer;
   font-size: 13px;
   font-weight: 850;
+}
+
+.topic-shortcuts button {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.topic-shortcuts button.is-active,
+.topic-shortcuts button:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
 }
 
 .post-categories button.is-active,

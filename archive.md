@@ -5,6 +5,7 @@ permalink: /posts/
 ---
 
 {% assign sorted_tags = site.tags | sort %}
+{% assign topic_paths = site.data.topic_paths %}
 
 <section class="posts-hero">
   <div class="posts-hero-inner">
@@ -29,6 +30,12 @@ permalink: /posts/
   </a>
 </section>
 
+<section class="topic-shortcuts" aria-label="Main topics">
+  {% for topic in topic_paths %}
+    <button type="button" data-topic-filter="{{ topic.key }}" data-topic-label="{{ topic.label }}">{{ topic.label }}</button>
+  {% endfor %}
+</section>
+
 <section class="post-controls" aria-label="Post filters">
   <select id="categoryFilter" aria-label="카테고리">
     <option value="all">전체 태그</option>
@@ -43,7 +50,7 @@ permalink: /posts/
   <button class="filter-reset" id="resetFilters" type="button">초기화</button>
 </section>
 
-<p class="filter-note">카테고리는 전체 글을 빠르게 좁히는 용도이고, 아래 태그 버튼은 세부 주제를 바로 고를 때 유용합니다.</p>
+<p class="filter-note">주제 버튼은 여러 태그를 묶은 읽기 경로이고, 카테고리와 태그는 더 세부적으로 좁힐 때 유용합니다.</p>
 
 <section class="post-categories" aria-label="Post tags">
   {% for tag in sorted_tags %}
@@ -59,7 +66,8 @@ permalink: /posts/
 
 <section class="archive-list">
   {% for post in site.posts %}
-    <article class="post-row" data-title="{{ post.title | escape }}" data-excerpt="{{ post.excerpt | strip_html | escape }}" data-tags="{{ post.tags | join: ',' }}">
+    {% capture topic_keys %}{% for topic in topic_paths %}{% assign matches_topic = false %}{% for tag in topic.tags %}{% if post.tags contains tag %}{% assign matches_topic = true %}{% break %}{% endif %}{% endfor %}{% if matches_topic %}{{ topic.key }}|{% endif %}{% endfor %}{% endcapture %}
+    <article class="post-row" data-title="{{ post.title | escape }}" data-excerpt="{{ post.excerpt | strip_html | escape }}" data-tags="{{ post.tags | join: ',' }}" data-topics="{{ topic_keys | strip }}">
       <a href="{{ post.url | relative_url }}">
         <div class="post-row-body">
           <div class="post-category">
@@ -82,12 +90,14 @@ permalink: /posts/
   const searchInput = document.querySelector("#postSearch");
   const categoryFilter = document.querySelector("#categoryFilter");
   const resetFiltersButton = document.querySelector("#resetFilters");
+  const topicButtons = [...document.querySelectorAll("[data-topic-filter]")];
   const tagButtons = [...document.querySelectorAll("[data-tag]")];
   const posts = [...document.querySelectorAll(".post-row")];
   const count = document.querySelector("#visiblePostCount");
   const emptyState = document.querySelector("#emptyState");
   const filterStatus = document.querySelector("#filterStatus");
   const params = new URLSearchParams(window.location.search);
+  let activeTopic = "";
   let activeTag = "";
 
   function normalize(value) {
@@ -96,7 +106,7 @@ permalink: /posts/
 
   function parseTags(raw) {
     return (raw || "")
-      .split(",")
+      .split(/[,|]/)
       .map((tag) => tag.trim())
       .filter(Boolean);
   }
@@ -108,6 +118,7 @@ permalink: /posts/
   function syncQuery() {
     const next = new URLSearchParams();
     if (searchInput.value.trim()) next.set("q", searchInput.value.trim());
+    if (activeTopic) next.set("topic", activeTopic);
     if (categoryFilter.value !== "all") next.set("category", categoryFilter.value);
     if (activeTag) next.set("tag", activeTag);
     const query = next.toString();
@@ -118,16 +129,19 @@ permalink: /posts/
   function applyFilters() {
     const keyword = normalize(searchInput.value);
     const category = categoryFilter.value;
+    const activeTopicButton = topicButtons.find((item) => item.dataset.topicFilter === activeTopic);
     let visible = 0;
     const summary = [];
 
     posts.forEach((post) => {
       const text = normalize(`${post.dataset.title} ${post.dataset.excerpt}`);
       const tags = parseTags(post.dataset.tags);
+      const topics = parseTags(post.dataset.topics);
       const matchesKeyword = !keyword || text.includes(keyword);
+      const matchesTopic = !activeTopic || topics.includes(activeTopic);
       const matchesCategory = category === "all" || tags.includes(category);
       const matchesTag = !activeTag || tags.includes(activeTag);
-      const show = matchesKeyword && matchesCategory && matchesTag;
+      const show = matchesKeyword && matchesTopic && matchesCategory && matchesTag;
 
       post.hidden = !show;
       if (show) visible += 1;
@@ -136,6 +150,7 @@ permalink: /posts/
     count.textContent = visible;
     emptyState.hidden = visible !== 0;
 
+    if (activeTopic) summary.push(`주제: ${activeTopicButton?.dataset.topicLabel || activeTopic}`);
     if (category !== "all") summary.push(`카테고리: ${category}`);
     if (activeTag) summary.push(`태그: #${activeTag}`);
     if (searchInput.value.trim()) summary.push(`검색: "${searchInput.value.trim()}"`);
@@ -149,9 +164,18 @@ permalink: /posts/
   resetFiltersButton.addEventListener("click", () => {
     searchInput.value = "";
     categoryFilter.value = "all";
+    activeTopic = "";
     activeTag = "";
+    topicButtons.forEach((item) => item.classList.remove("is-active"));
     tagButtons.forEach((item) => item.classList.remove("is-active"));
     applyFilters();
+  });
+  topicButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeTopic = activeTopic === button.dataset.topicFilter ? "" : button.dataset.topicFilter;
+      topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
+      applyFilters();
+    });
   });
   tagButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -162,6 +186,13 @@ permalink: /posts/
   });
 
   if (params.get("q")) searchInput.value = params.get("q");
+  if (params.get("topic")) {
+    const requestedTopic = params.get("topic");
+    if (topicButtons.some((item) => item.dataset.topicFilter === requestedTopic)) {
+      activeTopic = requestedTopic;
+      topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
+    }
+  }
   if (params.get("category") && hasOption(categoryFilter, params.get("category"))) {
     categoryFilter.value = params.get("category");
   }

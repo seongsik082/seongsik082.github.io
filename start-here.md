@@ -4,11 +4,7 @@ title: Start Here
 permalink: /start-here/
 ---
 
-{% assign java_posts = site.posts | where_exp: "post", "post.tags contains 'Java'" %}
-{% assign spring_posts = site.posts | where_exp: "post", "post.tags contains 'Spring' or post.tags contains 'JPA'" %}
-{% assign api_posts = site.posts | where_exp: "post", "post.tags contains 'REST API' or post.tags contains 'API' or post.tags contains 'HTTP'" %}
-{% assign database_posts = site.posts | where_exp: "post", "post.tags contains 'Database' or post.tags contains 'Transaction'" %}
-{% assign ops_posts = site.posts | where_exp: "post", "post.tags contains 'Observability' or post.tags contains 'Kubernetes' or post.tags contains 'CI/CD' or post.tags contains 'AWS'" %}
+{% assign topic_paths = site.data.topic_paths %}
 
 <section class="page-title">
   <p class="eyebrow">Start Here</p>
@@ -38,60 +34,32 @@ permalink: /start-here/
 </section>
 
 <section class="guide-grid">
-  <article class="guide-card">
-    <p class="section-label">Java</p>
-    <h2>동시성과 비동기 처리</h2>
-    <p>스레드, 공용 풀, 비동기 체인이 실제 응답 지연과 어떻게 연결되는지부터 읽어보는 것을 추천합니다.</p>
-    <div class="mini-post-list">
-      {% for post in java_posts limit: 3 %}
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="guide-card">
-    <p class="section-label">Spring / JPA</p>
-    <h2>서비스 계층과 쿼리 흐름</h2>
-    <p>트랜잭션, 지연 로딩, N+1, 프레임워크 경계처럼 서비스 코드와 실제 DB 동작이 만나는 지점을 다룹니다.</p>
-    <div class="mini-post-list">
-      {% for post in spring_posts limit: 3 %}
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="guide-card">
-    <p class="section-label">REST API</p>
-    <h2>설계와 충돌 방지</h2>
-    <p>상태 코드, 멱등성, 조건부 요청, 중복 방지처럼 API를 운영 가능한 형태로 만드는 기준을 모았습니다.</p>
-    <div class="mini-post-list">
-      {% for post in api_posts limit: 4 %}
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="guide-card">
-    <p class="section-label">Database</p>
-    <h2>정합성과 성능</h2>
-    <p>인덱스, 락, 격리 수준, 트랜잭션 규칙처럼 실무에서 자주 사고가 나는 데이터 영역을 먼저 읽어볼 수 있습니다.</p>
-    <div class="mini-post-list">
-      {% for post in database_posts limit: 4 %}
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% endfor %}
-    </div>
-  </article>
-
-  <article class="guide-card">
-    <p class="section-label">Operations</p>
-    <h2>관측성과 배포</h2>
-    <p>서비스를 운영하면서 어떤 신호를 보고 어디서 병목과 장애를 찾는지에 초점을 맞춘 글들입니다.</p>
-    <div class="mini-post-list">
-      {% for post in ops_posts limit: 4 %}
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      {% endfor %}
-    </div>
-  </article>
+  {% for topic in topic_paths %}
+    <article class="guide-card">
+      <p class="section-label">{{ topic.label }}</p>
+      <h2>{{ topic.title }}</h2>
+      <p>{{ topic.start_description }}</p>
+      <div class="mini-post-list">
+        {% assign shown_posts = 0 %}
+        {% for post in site.posts %}
+          {% assign matches_topic = false %}
+          {% for tag in topic.tags %}
+            {% if post.tags contains tag %}
+              {% assign matches_topic = true %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          {% if matches_topic %}
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            {% assign shown_posts = shown_posts | plus: 1 %}
+          {% endif %}
+          {% if shown_posts >= topic.post_limit %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  {% endfor %}
 
   <article class="guide-card">
     <p class="section-label">Next</p>

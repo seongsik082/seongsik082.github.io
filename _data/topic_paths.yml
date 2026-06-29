@@ -1,0 +1,90 @@
+- key: java
+  label: "Java"
+  chip_label: "Java"
+  archive_tag: "Java"
+  view_label: "Java 글 보기"
+  tags:
+    - "Java"
+  title: "동시성, 스레드, 비동기 처리"
+  home_description: "응답 지연, 공용 풀 경합, 실행 흐름처럼 애플리케이션 코드에서 바로 체감되는 문제를 중심으로 읽을 수 있습니다."
+  start_description: "스레드, 공용 풀, 비동기 체인이 실제 응답 지연과 어떻게 연결되는지부터 읽어보는 것을 추천합니다."
+  topics_description: "애플리케이션 코드 안에서 바로 체감되는 지연, 스레드 풀, 비동기 흐름 문제를 중심으로 읽을 수 있습니다."
+  count_label: "posts"
+  post_limit: 3
+
+- key: spring
+  label: "Spring / JPA"
+  chip_label: "Spring"
+  archive_tag: "Spring"
+  view_label: "Spring 글 보기"
+  tags:
+    - "Spring"
+    - "JPA"
+  title: "서비스 계층, 트랜잭션, 지연 로딩"
+  home_description: "트랜잭션, 지연 로딩, N+1, 서비스 계층 설계처럼 Spring 백엔드에서 자주 부딪히는 주제를 모았습니다."
+  start_description: "트랜잭션, 지연 로딩, N+1, 프레임워크 경계처럼 서비스 코드와 실제 DB 동작이 만나는 지점을 다룹니다."
+  topics_description: "Spring 서비스 경계, JPA 지연 로딩, N+1, OSIV처럼 프레임워크 동작과 쿼리 흐름이 만나는 지점을 다룹니다."
+  count_label: "related posts"
+  post_limit: 3
+
+- key: rest-api
+  label: "REST API"
+  chip_label: "REST API"
+  archive_tag: "REST API"
+  view_label: "API 글 보기"
+  tags:
+    - "REST API"
+    - "API"
+    - "HTTP"
+  title: "상태 코드, 조건부 요청, 중복 방지"
+  home_description: "API를 동작하게 만드는 수준을 넘어, 충돌과 재시도까지 고려한 설계 기준을 정리합니다."
+  start_description: "상태 코드, 멱등성, 조건부 요청, 중복 방지처럼 API를 운영 가능한 형태로 만드는 기준을 모았습니다."
+  topics_description: "클라이언트와 서버의 약속을 어떻게 운영 가능한 형태로 만들지에 초점을 맞춘 글들입니다."
+  count_label: "related posts"
+  post_limit: 4
+
+- key: database
+  label: "Database"
+  chip_label: "Database"
+  archive_tag: "Database"
+  view_label: "Database 글 보기"
+  tags:
+    - "Database"
+    - "Transaction"
+  title: "정합성, 인덱스, 격리 수준, 락"
+  home_description: "성능과 정합성이 함께 걸리는 주제를 운영 관점에서 살펴볼 수 있습니다."
+  start_description: "인덱스, 락, 격리 수준, 트랜잭션 규칙처럼 실무에서 자주 사고가 나는 데이터 영역을 먼저 읽어볼 수 있습니다."
+  topics_description: "성능과 정합성이 함께 걸리는 데이터 영역을 모았습니다. 실무에서 버그와 장애가 자주 시작되는 영역입니다."
+  count_label: "related posts"
+  post_limit: 4
+
+- key: distributed-systems
+  label: "Distributed Systems"
+  chip_label: "Distributed Systems"
+  archive_tag: "Distributed Systems"
+  view_label: "분산 시스템 글 보기"
+  tags:
+    - "Distributed Systems"
+  title: "재시도, 멱등성, 중복 실행 방지"
+  home_description: "재시도와 중복 실행을 어떻게 막을지, 분산 환경에서 기준을 세우는 글들을 모았습니다."
+  start_description: "재시도 정책과 중복 실행 방지는 단일 서버에서 잘 보이지 않지만 운영 단계에서 빠르게 중요해지는 영역입니다."
+  topics_description: "단일 서버 관점에서 놓치기 쉬운 재시도와 분산 환경의 중복 실행 문제를 다룹니다."
+  count_label: "posts"
+  post_limit: 3
+
+- key: operations
+  label: "Operations"
+  chip_label: "Operations"
+  archive_tag: "Observability"
+  view_label: "운영 글 보기"
+  tags:
+    - "Observability"
+    - "Kubernetes"
+    - "CI/CD"
+    - "AWS"
+  title: "배포, 관측성, 운영 판단 기준"
+  home_description: "로그, 메트릭, 배포 흐름처럼 서비스 운영 단계에서 무엇을 확인해야 하는지 다룹니다."
+  start_description: "서비스를 운영하면서 어떤 신호를 보고 어디서 병목과 장애를 찾는지에 초점을 맞춘 글들입니다."
+  topics_description: "서비스를 실제로 운영할 때 어떤 신호를 보고 어디서 병목을 찾는지에 초점을 맞춘 글들입니다."
+  count_label: "related posts"
+  post_limit: 4

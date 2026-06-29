@@ -3,6 +3,8 @@ layout: default
 title: Home
 ---
 
+{% assign topic_paths = site.data.topic_paths %}
+
 <section class="home-hero">
   <div class="home-hero-inner">
     <p class="eyebrow">Backend Developer Blog</p>
@@ -48,14 +50,9 @@ title: Home
 </section>
 
 <section class="home-topics">
-  <a href="{{ '/posts/?tag=Java' | relative_url }}">Java</a>
-  <a href="{{ '/posts/?tag=Spring' | relative_url }}">Spring</a>
-  <a href="{{ '/posts/?tag=Database' | relative_url }}">Database</a>
-  <a href="{{ '/posts/?tag=REST%20API' | relative_url }}">REST API</a>
-  <a href="{{ '/posts/?tag=Distributed%20Systems' | relative_url }}">Distributed Systems</a>
-  <a href="{{ '/posts/?tag=Observability' | relative_url }}">Observability</a>
-  <a href="{{ '/posts/?tag=Kubernetes' | relative_url }}">Kubernetes</a>
-  <a href="{{ '/posts/?tag=Performance' | relative_url }}">Performance</a>
+  {% for topic in topic_paths %}
+    <a href="{{ '/posts/' | relative_url }}?topic={{ topic.key }}">{{ topic.chip_label }}</a>
+  {% endfor %}
 </section>
 
 <section class="home-section">
@@ -66,26 +63,13 @@ title: Home
   </div>
 
   <div class="reading-grid">
-    <a class="reading-card" href="{{ '/posts/?tag=Java' | relative_url }}">
-      <p class="section-label">Java</p>
-      <h3>동시성, 스레드, 비동기</h3>
-      <p>응답 지연, 공용 풀 경합, 실행 흐름처럼 애플리케이션 코드에서 바로 체감되는 문제를 중심으로 읽을 수 있습니다.</p>
-    </a>
-    <a class="reading-card" href="{{ '/posts/?tag=Spring' | relative_url }}">
-      <p class="section-label">Spring / JPA</p>
-      <h3>프레임워크 경계와 쿼리 흐름</h3>
-      <p>트랜잭션, 지연 로딩, N+1, 서비스 계층 설계처럼 Spring 백엔드에서 자주 부딪히는 주제를 모았습니다.</p>
-    </a>
-    <a class="reading-card" href="{{ '/posts/?tag=REST%20API' | relative_url }}">
-      <p class="section-label">REST API</p>
-      <h3>상태 코드, 조건부 요청, 중복 방지</h3>
-      <p>API를 동작하게 만드는 수준을 넘어, 충돌과 재시도까지 고려한 설계 기준을 정리합니다.</p>
-    </a>
-    <a class="reading-card" href="{{ '/posts/?tag=Database' | relative_url }}">
-      <p class="section-label">Database</p>
-      <h3>트랜잭션, 인덱스, 정합성</h3>
-      <p>성능과 정합성이 함께 걸리는 주제를 운영 관점에서 살펴볼 수 있습니다.</p>
-    </a>
+    {% for topic in topic_paths limit: 4 %}
+      <a class="reading-card" href="{{ '/posts/' | relative_url }}?topic={{ topic.key }}">
+        <p class="section-label">{{ topic.label }}</p>
+        <h3>{{ topic.title }}</h3>
+        <p>{{ topic.home_description }}</p>
+      </a>
+    {% endfor %}
   </div>
 </section>
 
