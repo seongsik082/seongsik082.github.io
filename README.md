@@ -76,6 +76,14 @@ scripts/new_post.sh \
 이 스크립트는 `_posts/` 아래에 새 파일을 만들고, 실행 시각보다 5분 이른 `Asia/Seoul` 기준 시간을 넣습니다.
 또한 `Backend` 태그를 자동으로 포함하고, 실무형 글 구조 초안을 함께 생성합니다.
 
+포스트 규칙 검증은 아래 스크립트로 할 수 있습니다.
+
+```bash
+ruby scripts/check_posts.rb
+```
+
+이 스크립트는 파일명 형식, 필수 front matter, 중복 제목, 중복 slug, 미래 날짜, 파일명 날짜와 front matter 날짜 불일치를 점검합니다.
+
 예시:
 
 ```md
@@ -91,6 +99,8 @@ excerpt: "격리 수준은 동시에 들어오는 요청이 어떤 데이터를 
 
 ```bash
 git diff --check
+ruby scripts/check_posts.rb
+# 로컬 Jekyll 환경이 안정적일 때만 추가
 bundle exec jekyll build
 ```
 
