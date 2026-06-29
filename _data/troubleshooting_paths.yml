@@ -1,0 +1,55 @@
+- key: slow-response
+  label: "Latency"
+  title: "응답이 갑자기 느려졌을 때"
+  description: "p95/p99가 먼저 튀고 timeout이 늘어날 때는 DB 자체보다 커넥션 대기, 공용 풀 경합, 관측 지표부터 같이 보는 편이 빠릅니다."
+  start_with: "응답 시간 급증, pending thread 증가, 외부 호출 지연이 함께 보일 때"
+  watch_items:
+    - "active connection, pending thread, getConnection timeout"
+    - "common pool 또는 작업 큐 적체"
+    - "p95/p99 latency와 실제 DB query time 차이"
+  slugs:
+    - "connection-pool-exhaustion-first-signals"
+    - "java-completablefuture-commonpool-blocking"
+    - "prometheus-metric-cardinality-cost"
+
+- key: consistency
+  label: "Consistency"
+  title: "데이터가 가끔만 어긋날 때"
+  description: "가끔만 재현되는 데이터 불일치는 격리 수준, 조건부 요청, dual write 같은 경계를 먼저 의심해야 합니다."
+  start_with: "동시 수정, 중복 처리, 이벤트 누락, 가끔 발생하는 정합성 버그"
+  watch_items:
+    - "트랜잭션 경계와 격리 수준"
+    - "ETag, If-Match 같은 동시 수정 방지 계약"
+    - "이벤트 발행 누락과 outbox backlog"
+  slugs:
+    - "transaction-isolation-concurrency-bugs"
+    - "rest-api-etag-if-match-lost-update"
+    - "outbox-pattern-when-to-adopt"
+
+- key: auth-access
+  label: "Auth / Access"
+  title: "인증은 되는데 요청이 실패할 때"
+  description: "401, 403, 연결 차단처럼 접근 문제는 키 교체, 네트워크 경계, API 계약이 서로 다른 층에서 엮여 나오는 경우가 많습니다."
+  start_with: "로그인은 성공했는데 다음 요청이 실패하거나, 특정 환경에서만 접근이 막힐 때"
+  watch_items:
+    - "JWT kid, iss, aud, 만료 구간"
+    - "보안 그룹과 접근 허용 범위"
+    - "요청/응답 상태 코드와 인증 헤더 계약"
+  slugs:
+    - "jwt-key-rotation-operational-checkpoints"
+    - "aws-security-group-basic"
+    - "http-api-note"
+
+- key: deploy-runtime
+  label: "Deploy / Runtime"
+  title: "배포는 됐는데 운영에서 흔들릴 때"
+  description: "배포 성공과 운영 안정성은 다릅니다. readiness, liveness, 초기화 지연, CI 흐름을 따로 봐야 원인을 좁히기 쉽습니다."
+  start_with: "배포 직후 오류율 증가, 재시작 반복, 일부 요청만 실패할 때"
+  watch_items:
+    - "startup, readiness, liveness probe 차이"
+    - "배포 파이프라인과 롤백 기준"
+    - "컨테이너 시작 순서와 의존성 초기화"
+  slugs:
+    - "kubernetes-probes-startup-readiness-liveness-failures"
+    - "github-actions-ci-basic"
+    - "docker-backend-basic"

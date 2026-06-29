@@ -74,6 +74,37 @@ title: Home
 </section>
 
 <section class="home-section">
+  <div class="section-kicker">운영 질문으로 찾기</div>
+  <div class="section-head compact">
+    <h2>증상 기준으로 먼저 읽어도 됩니다</h2>
+    <a class="text-link" href="{{ '/troubleshooting/' | relative_url }}">Troubleshooting 허브</a>
+  </div>
+
+  <div class="reading-grid">
+    <a class="reading-card" href="{{ '/troubleshooting/#slow-response' | relative_url }}">
+      <p class="section-label">Latency</p>
+      <h3>응답이 갑자기 느려졌을 때</h3>
+      <p>커넥션 풀, 공용 풀, 메트릭 해석처럼 지연이 퍼질 때 먼저 볼 지점을 모았습니다.</p>
+    </a>
+    <a class="reading-card" href="{{ '/troubleshooting/#consistency' | relative_url }}">
+      <p class="section-label">Consistency</p>
+      <h3>데이터가 가끔 어긋날 때</h3>
+      <p>격리 수준, 조건부 요청, outbox처럼 정합성 버그를 좁히는 읽기 경로입니다.</p>
+    </a>
+    <a class="reading-card" href="{{ '/troubleshooting/#auth-access' | relative_url }}">
+      <p class="section-label">Auth / Access</p>
+      <h3>인증은 되는데 요청이 실패할 때</h3>
+      <p>JWT 키 교체, 접근 제어, API 계약처럼 다른 계층이 만나는 구간을 묶었습니다.</p>
+    </a>
+    <a class="reading-card" href="{{ '/troubleshooting/#deploy-runtime' | relative_url }}">
+      <p class="section-label">Deploy / Runtime</p>
+      <h3>배포 직후 서비스가 흔들릴 때</h3>
+      <p>probe, 컨테이너 시작, CI 흐름처럼 배포 이후 운영 안정성과 연결되는 글을 모았습니다.</p>
+    </a>
+  </div>
+</section>
+
+<section class="home-section">
   <div class="section-kicker">블로그 방향</div>
   <div class="section-head compact">
     <h2>이 블로그에서 주로 다루는 질문</h2>
