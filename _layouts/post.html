@@ -2,6 +2,16 @@
 layout: default
 ---
 
+{% assign primary_tag = "" %}
+{% if page.tags and page.tags.size > 0 %}
+  {% assign primary_tag = page.tags | first %}
+  {% if primary_tag == "Backend" and page.tags.size > 1 %}
+    {% for tag in page.tags offset:1 limit:1 %}
+      {% assign primary_tag = tag %}
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
 <article class="post">
   <header class="post-header">
     <p class="eyebrow">Post</p>
@@ -28,6 +38,14 @@ layout: default
       <div class="post-side-card" data-post-toc>
         <p class="section-label">이 글에서 다루는 내용</p>
       </div>
+      {% if primary_tag != "" %}
+        <div class="post-side-card">
+          <p class="section-label">같은 주제 더 보기</p>
+          <a class="sidebar-link" href="{{ '/posts/' | relative_url }}?tag={{ primary_tag | url_encode }}">#{{ primary_tag }} 글 모아보기</a>
+          <a class="sidebar-link" href="{{ '/topics/' | relative_url }}">주제 허브에서 이어서 보기</a>
+          <a class="sidebar-link" href="{{ '/start-here/' | relative_url }}">처음 읽기 가이드 보기</a>
+        </div>
+      {% endif %}
       <div class="post-side-card">
         <p class="section-label">탐색</p>
         <a class="sidebar-link" href="{{ '/posts/' | relative_url }}">전체 글 목록 보기</a>
@@ -39,6 +57,44 @@ layout: default
       {{ content }}
     </div>
   </div>
+
+  {% if primary_tag != "" %}
+    {% assign related_count = 0 %}
+    <section class="related-posts">
+      <div class="section-head compact">
+        <div>
+          <p class="section-kicker">Related Reading</p>
+          <h2>#{{ primary_tag }} 주제를 이어서 읽어보세요</h2>
+        </div>
+        <a class="text-link" href="{{ '/posts/' | relative_url }}?tag={{ primary_tag | url_encode }}">같은 태그 전체 보기</a>
+      </div>
+
+      <div class="related-post-grid">
+        {% for post in site.posts %}
+          {% if post.url != page.url and post.tags contains primary_tag %}
+            {% assign related_count = related_count | plus: 1 %}
+            <a class="related-post-card" href="{{ post.url | relative_url }}">
+              <p class="section-label">{{ primary_tag }}</p>
+              <h3>{{ post.title }}</h3>
+              <p>{{ post.excerpt | strip_html | truncate: 120 }}</p>
+              <span>{{ post.date | date: "%Y.%m.%d" }}</span>
+            </a>
+            {% if related_count >= 3 %}
+              {% break %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if related_count == 0 %}
+          <article class="related-post-card is-empty">
+            <p class="section-label">Coming Next</p>
+            <h3>이 주제의 후속 글이 더 쌓일 예정입니다</h3>
+            <p>지금은 전체 글 목록이나 Topics 페이지에서 가까운 주제를 먼저 살펴보는 편이 좋습니다.</p>
+          </article>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
 
   <nav class="post-pagination" aria-label="Post navigation">
     {% if page.previous %}
