@@ -1,3 +1,20 @@
 <footer class="site-footer">
-  <p>© {{ site.time | date: "%Y" }} {{ site.author.name }}. Built with GitHub Pages.</p>
+  <div class="footer-grid">
+    <div>
+      <strong>{{ site.author.name }}</strong>
+      <p>Java, Spring, Database, 운영 이슈를 기록하는 백엔드 개발 블로그</p>
+    </div>
+    <div>
+      <strong>Focus</strong>
+      <p>{{ site.author.focus }}</p>
+    </div>
+    <div>
+      <strong>Links</strong>
+      <p>
+        <a href="https://github.com/{{ site.author.github }}">GitHub</a>
+        ·
+        <a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a>
+      </p>
+    </div>
+  </div>
 </footer>

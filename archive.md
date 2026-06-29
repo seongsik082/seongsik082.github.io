@@ -6,44 +6,43 @@ permalink: /posts/
 
 <section class="posts-hero">
   <div class="posts-hero-inner">
-    <h1>Posts</h1>
-    <p>전체 포스트 목록을 살펴보세요.</p>
+    <p class="eyebrow">Archive</p>
+    <h1>백엔드 개발 주제별로 글을 탐색해보세요.</h1>
+    <p>Java, Spring, Database, REST API, 운영 이슈를 태그와 검색으로 빠르게 찾을 수 있습니다.</p>
   </div>
 </section>
 
 <section class="post-controls" aria-label="Post filters">
   <select id="categoryFilter" aria-label="카테고리">
-    <option value="all">카테고리</option>
+    <option value="all">전체 태그</option>
     <option value="Backend">Backend</option>
-    <option value="Network">Network</option>
     <option value="Java">Java</option>
+    <option value="Spring">Spring</option>
+    <option value="JPA">JPA</option>
+    <option value="Database">Database</option>
+    <option value="REST API">REST API</option>
+    <option value="API">API</option>
     <option value="HTTP">HTTP</option>
-    <option value="Writing">Writing</option>
-    <option value="Project">Project</option>
-    <option value="Retrospect">Retrospect</option>
+    <option value="Distributed Systems">Distributed Systems</option>
+    <option value="Observability">Observability</option>
+    <option value="Performance">Performance</option>
+    <option value="Kubernetes">Kubernetes</option>
+    <option value="AWS">AWS</option>
+    <option value="Docker">Docker</option>
+    <option value="Redis">Redis</option>
+    <option value="Testing">Testing</option>
   </select>
   <label class="search-box" for="postSearch">
     <span aria-hidden="true">⌕</span>
-    <input id="postSearch" type="search" placeholder="검색어">
+    <input id="postSearch" type="search" placeholder="제목 또는 요약 검색">
   </label>
 </section>
 
 <section class="post-categories" aria-label="Post tags">
-  <button type="button" data-tag="Backend">#Backend</button>
-  <button type="button" data-tag="Network">#Network</button>
-  <button type="button" data-tag="Spring">#Spring</button>
-  <button type="button" data-tag="Java">#Java</button>
-  <button type="button" data-tag="HTTP">#HTTP</button>
-  <button type="button" data-tag="Database">#Database</button>
-  <button type="button" data-tag="API">#API</button>
-  <button type="button" data-tag="JPA">#JPA</button>
-  <button type="button" data-tag="Redis">#Redis</button>
-  <button type="button" data-tag="Docker">#Docker</button>
-  <button type="button" data-tag="AWS">#AWS</button>
-  <button type="button" data-tag="CI/CD">#CI/CD</button>
-  <button type="button" data-tag="Testing">#Testing</button>
-  <button type="button" data-tag="Writing">#Writing</button>
-  <button type="button" data-tag="Retrospect">#Retrospect</button>
+  {% assign sorted_tags = site.tags | sort %}
+  {% for tag in sorted_tags %}
+    <button type="button" data-tag="{{ tag[0] }}">#{{ tag[0] }}</button>
+  {% endfor %}
 </section>
 
 <section class="post-count">
@@ -69,16 +68,37 @@ permalink: /posts/
   {% endfor %}
 </section>
 
+<p class="empty-state" id="emptyState" hidden>조건에 맞는 글이 없습니다. 다른 태그나 검색어로 다시 찾아보세요.</p>
+
 <script>
   const searchInput = document.querySelector("#postSearch");
   const categoryFilter = document.querySelector("#categoryFilter");
   const tagButtons = [...document.querySelectorAll("[data-tag]")];
   const posts = [...document.querySelectorAll(".post-row")];
   const count = document.querySelector("#visiblePostCount");
+  const emptyState = document.querySelector("#emptyState");
+  const params = new URLSearchParams(window.location.search);
   let activeTag = "";
 
   function normalize(value) {
     return (value || "").toLowerCase();
+  }
+
+  function parseTags(raw) {
+    return (raw || "")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+  }
+
+  function syncQuery() {
+    const next = new URLSearchParams();
+    if (searchInput.value.trim()) next.set("q", searchInput.value.trim());
+    if (categoryFilter.value !== "all") next.set("category", categoryFilter.value);
+    if (activeTag) next.set("tag", activeTag);
+    const query = next.toString();
+    const url = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
   }
 
   function applyFilters() {
@@ -88,7 +108,7 @@ permalink: /posts/
 
     posts.forEach((post) => {
       const text = normalize(`${post.dataset.title} ${post.dataset.excerpt}`);
-      const tags = post.dataset.tags || "";
+      const tags = parseTags(post.dataset.tags);
       const matchesKeyword = !keyword || text.includes(keyword);
       const matchesCategory = category === "all" || tags.includes(category);
       const matchesTag = !activeTag || tags.includes(activeTag);
@@ -99,6 +119,8 @@ permalink: /posts/
     });
 
     count.textContent = visible;
+    emptyState.hidden = visible !== 0;
+    syncQuery();
   }
 
   searchInput.addEventListener("input", applyFilters);
@@ -110,4 +132,13 @@ permalink: /posts/
       applyFilters();
     });
   });
+
+  if (params.get("q")) searchInput.value = params.get("q");
+  if (params.get("category")) categoryFilter.value = params.get("category");
+  if (params.get("tag")) {
+    activeTag = params.get("tag");
+    tagButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.tag === activeTag));
+  }
+
+  applyFilters();
 </script>

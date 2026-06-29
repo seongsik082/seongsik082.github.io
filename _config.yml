@@ -1,5 +1,5 @@
 title: "김성식 기술 블로그"
-description: "백엔드 개발자로서 배운 것, 만든 것, 해결한 것을 기록합니다."
+description: "Java, Spring, Database, API, 운영 이슈를 백엔드 개발자 관점에서 정리하는 기술 블로그입니다."
 url: ""
 baseurl: ""
 author:
@@ -7,6 +7,7 @@ author:
   role: "Backend Developer"
   email: "tjdtlr991210@gmail.com"
   github: "seongsik082"
+  focus: "Java, Spring Boot, Database, Observability"
 
 lang: ko-KR
 timezone: Asia/Seoul
