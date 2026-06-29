@@ -25,6 +25,7 @@ fi
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
 posts_dir="${POSTS_DIR:-${repo_root}/_posts}"
 plan_path="${1:-}"
+allow_existing_today="${ALLOW_EXISTING_TODAY:-0}"
 
 if [ -z "$plan_path" ]; then
   timestamp="$(TZ=Asia/Seoul date "+%Y%m%d-%H%M%S")"
@@ -33,6 +34,14 @@ fi
 
 mkdir -p "$(dirname "$plan_path")"
 mkdir -p "$posts_dir"
+
+today_date="$(TZ=Asia/Seoul date "+%Y-%m-%d")"
+existing_today_count="$(find "$posts_dir" -maxdepth 1 -type f -name "${today_date}-*.md" | wc -l | tr -d ' ')"
+if [ "$existing_today_count" -gt 0 ] && [ "$allow_existing_today" != "1" ]; then
+  echo "found ${existing_today_count} existing post(s) for ${today_date} in ${posts_dir}" >&2
+  echo "Set ALLOW_EXISTING_TODAY=1 if you intentionally want to generate more drafts for today." >&2
+  exit 1
+fi
 
 suggest_output="$(mktemp /tmp/daily-suggest.XXXXXX)"
 trap 'rm -f "$suggest_output"' EXIT

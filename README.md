@@ -115,6 +115,15 @@ scripts/prepare_daily_posts.sh
 ```
 
 이 스크립트는 `/tmp/daily-posts-plan-*.txt` 계획 파일을 만들고, 그 내용을 기준으로 `_posts/`에 3개 초안을 생성한 뒤 `ruby scripts/check_posts.rb`까지 실행합니다.
+같은 날짜 글이 이미 있으면 기본적으로 중단하며, 정말 추가 생성이 필요할 때만 `ALLOW_EXISTING_TODAY=1 scripts/prepare_daily_posts.sh`처럼 명시적으로 허용합니다.
+
+오늘 작성 상태를 먼저 확인하려면 아래 스크립트를 사용할 수 있습니다.
+
+```bash
+ruby scripts/daily_status.rb
+```
+
+이 스크립트는 오늘 날짜 기준 포스트 수, 오늘 작성한 글 제목, 최근 7일 태그, 다음에 실행할 명령 후보를 보여줍니다.
 
 예시:
 
