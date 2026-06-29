@@ -8,13 +8,61 @@ layout: default
     <h1>{{ page.title }}</h1>
     <div class="post-meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y.%m.%d" }}</time>
-      {% if page.tags %}
-        <span>{{ page.tags | join: ", " }}</span>
-      {% endif %}
+      <span>{{ site.author.role }}</span>
     </div>
+    {% if page.excerpt %}
+      <p class="post-excerpt">{{ page.excerpt | strip_html }}</p>
+    {% endif %}
+    {% if page.tags %}
+      <div class="post-tag-list" aria-label="Post tags">
+        {% for tag in page.tags %}
+          {% assign encoded_tag = tag | url_encode %}
+          <a href="{{ '/posts/' | relative_url }}?tag={{ encoded_tag }}">#{{ tag }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
   </header>
 
-  <div class="content">
-    {{ content }}
+  <div class="post-layout">
+    <aside class="post-sidebar">
+      <div class="post-side-card" data-post-toc>
+        <p class="section-label">이 글에서 다루는 내용</p>
+      </div>
+      <div class="post-side-card">
+        <p class="section-label">탐색</p>
+        <a class="sidebar-link" href="{{ '/posts/' | relative_url }}">전체 글 목록 보기</a>
+        <a class="sidebar-link" href="{{ '/about/' | relative_url }}">블로그 소개 보기</a>
+      </div>
+    </aside>
+
+    <div class="content post-content">
+      {{ content }}
+    </div>
   </div>
+
+  <nav class="post-pagination" aria-label="Post navigation">
+    {% if page.previous %}
+      <a class="post-nav-card" href="{{ page.previous.url | relative_url }}">
+        <span class="section-label">이전 글</span>
+        <strong>{{ page.previous.title }}</strong>
+      </a>
+    {% else %}
+      <div class="post-nav-card is-empty">
+        <span class="section-label">이전 글</span>
+        <strong>이전 글이 없습니다</strong>
+      </div>
+    {% endif %}
+
+    {% if page.next %}
+      <a class="post-nav-card" href="{{ page.next.url | relative_url }}">
+        <span class="section-label">다음 글</span>
+        <strong>{{ page.next.title }}</strong>
+      </a>
+    {% else %}
+      <div class="post-nav-card is-empty">
+        <span class="section-label">다음 글</span>
+        <strong>다음 글이 없습니다</strong>
+      </div>
+    {% endif %}
+  </nav>
 </article>

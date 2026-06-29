@@ -623,6 +623,59 @@ section + section {
   max-width: 760px;
 }
 
+.post-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 32px;
+  align-items: start;
+}
+
+.post-content {
+  min-width: 0;
+}
+
+.post-sidebar {
+  position: sticky;
+  top: 94px;
+  display: grid;
+  gap: 14px;
+}
+
+.post-side-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), var(--soft));
+  padding: 18px;
+}
+
+:root.dark .post-side-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--soft));
+}
+
+.post-side-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.post-side-card li + li {
+  margin-top: 8px;
+}
+
+.post-side-card a,
+.sidebar-link {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.sidebar-link {
+  display: block;
+}
+
+.sidebar-link + .sidebar-link {
+  margin-top: 10px;
+}
+
 .content h2 {
   margin-top: 42px;
 }
@@ -683,11 +736,69 @@ section + section {
   border-bottom: 1px solid var(--line);
 }
 
+.post-excerpt {
+  max-width: 700px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
 .post-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   text-align: left;
+}
+
+.post-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.post-tag-list a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--soft);
+  padding: 0 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.post-pagination {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.post-nav-card {
+  display: block;
+  min-height: 120px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), var(--soft));
+  padding: 20px;
+}
+
+:root.dark .post-nav-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--soft));
+}
+
+.post-nav-card strong {
+  display: block;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.post-nav-card.is-empty {
+  color: var(--muted);
 }
 
 .site-footer {
@@ -747,8 +858,18 @@ section + section {
   .home-stats,
   .reading-grid,
   .focus-list,
-  .footer-grid {
+  .footer-grid,
+  .post-pagination {
     grid-template-columns: 1fr;
+  }
+
+  .post-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .post-sidebar {
+    position: static;
+    order: 2;
   }
 
   .project-card dl,

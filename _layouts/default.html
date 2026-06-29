@@ -1,10 +1,31 @@
 <!doctype html>
 <html lang="ko">
   <head>
+    {% assign page_title = page.title | default: site.title %}
+    {% assign meta_description = page.excerpt | default: page.description | default: site.description | strip_html | strip_newlines %}
+    {% assign canonical_url = page.url | absolute_url %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
-    <meta name="description" content="{{ site.description }}">
+    <meta name="description" content="{{ meta_description }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:title" content="{{ page_title }}">
+    <meta property="og:description" content="{{ meta_description }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:image" content="{{ '/assets/images/posts-hero.png' | absolute_url }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page_title }}">
+    <meta name="twitter:description" content="{{ meta_description }}">
+    <meta name="twitter:image" content="{{ '/assets/images/posts-hero.png' | absolute_url }}">
+    {% if page.layout == 'post' %}
+      <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+      {% for tag in page.tags %}
+        <meta property="article:tag" content="{{ tag }}">
+      {% endfor %}
+    {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   </head>
   <body>
@@ -21,6 +42,27 @@
         document.documentElement.classList.toggle("dark");
         localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
       });
+
+      const toc = document.querySelector("[data-post-toc]");
+      const articleContent = document.querySelector(".post-content");
+      if (toc && articleContent) {
+        const headings = [...articleContent.querySelectorAll("h2")];
+        if (headings.length === 0) {
+          toc.hidden = true;
+        } else {
+          const list = document.createElement("ul");
+          headings.forEach((heading, index) => {
+            if (!heading.id) heading.id = `section-${index + 1}`;
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = `#${heading.id}`;
+            link.textContent = heading.textContent.trim();
+            item.appendChild(link);
+            list.appendChild(item);
+          });
+          toc.appendChild(list);
+        }
+      }
     </script>
   </body>
 </html>
