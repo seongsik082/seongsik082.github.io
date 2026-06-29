@@ -321,6 +321,50 @@ h3 {
   color: var(--accent);
 }
 
+.topic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.topic-meta strong {
+  font-size: 14px;
+}
+
+.topic-meta a {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.topic-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.topic-cloud a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border-radius: 999px;
+  background: var(--soft);
+  padding: 0 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.topic-cloud span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .home-section {
   padding-bottom: 58px;
   border-bottom: 1px solid var(--line);
