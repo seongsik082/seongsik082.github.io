@@ -12,8 +12,8 @@ title: Home
       어디서 장애를 확인하고, 무엇을 먼저 의심해야 하는지 남기는 블로그를 지향합니다.
     </p>
     <div class="hero-actions">
+      <a href="{{ '/start-here/' | relative_url }}">처음 읽기 가이드</a>
       <a href="{{ '/posts/' | relative_url }}">최신 글 보기</a>
-      <a href="{{ '/about/' | relative_url }}">운영 방식 보기</a>
     </div>
   </div>
 </section>
@@ -62,7 +62,7 @@ title: Home
   <div class="section-kicker">읽기 가이드</div>
   <div class="section-head compact">
     <h2>관심 주제별로 시작해보세요</h2>
-    <a class="text-link" href="{{ '/posts/' | relative_url }}">전체 글 보기</a>
+    <a class="text-link" href="{{ '/start-here/' | relative_url }}">처음 읽기 페이지</a>
   </div>
 
   <div class="reading-grid">

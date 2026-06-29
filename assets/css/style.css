@@ -244,23 +244,29 @@ h3 {
 
 .home-stats,
 .reading-grid,
-.focus-list {
+.focus-list,
+.start-steps,
+.guide-grid {
   display: grid;
   gap: 18px;
 }
 
 .home-stats,
-.focus-list {
+.focus-list,
+.start-steps {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.reading-grid {
+.reading-grid,
+.guide-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .stat-card,
 .reading-card,
-.focus-list article {
+.focus-list article,
+.step-card,
+.guide-card {
   border: 1px solid var(--line);
   border-radius: 16px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), var(--soft));
@@ -269,7 +275,9 @@ h3 {
 
 :root.dark .stat-card,
 :root.dark .reading-card,
-:root.dark .focus-list article {
+:root.dark .focus-list article,
+:root.dark .step-card,
+:root.dark .guide-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--soft));
 }
 
@@ -283,14 +291,34 @@ h3 {
 .stat-card span,
 .reading-card p,
 .focus-list article p,
+.step-card p,
+.guide-card p,
 .footer-grid p {
   color: var(--muted);
 }
 
 .reading-card h3,
-.focus-list article h3 {
+.focus-list article h3,
+.step-card h2,
+.guide-card h2 {
   margin-bottom: 10px;
   font-size: 20px;
+}
+
+.mini-post-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.mini-post-list a {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.mini-post-list a:hover {
+  color: var(--accent);
 }
 
 .home-section {
@@ -858,6 +886,8 @@ section + section {
   .home-stats,
   .reading-grid,
   .focus-list,
+  .start-steps,
+  .guide-grid,
   .footer-grid,
   .post-pagination {
     grid-template-columns: 1fr;
