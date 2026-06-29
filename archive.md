@@ -4,6 +4,8 @@ title: Posts
 permalink: /posts/
 ---
 
+{% assign sorted_tags = site.tags | sort %}
+
 <section class="posts-hero">
   <div class="posts-hero-inner">
     <p class="eyebrow">Archive</p>
@@ -12,34 +14,38 @@ permalink: /posts/
   </div>
 </section>
 
+<section class="archive-guides" aria-label="Quick routes">
+  <a class="archive-guide-card" href="{{ '/start-here/' | relative_url }}">
+    <strong>처음 읽기</strong>
+    <span>읽는 순서를 먼저 보고 싶다면 여기서 시작합니다.</span>
+  </a>
+  <a class="archive-guide-card" href="{{ '/topics/' | relative_url }}">
+    <strong>주제 허브</strong>
+    <span>Java, Spring, API, Database, 운영 주제를 영역별로 훑어볼 수 있습니다.</span>
+  </a>
+  <a class="archive-guide-card" href="{{ '/posts/?tag=Backend' | relative_url }}">
+    <strong>전체 백엔드 글</strong>
+    <span>필터 없이 최신 글부터 빠르게 훑고 싶을 때 사용하면 됩니다.</span>
+  </a>
+</section>
+
 <section class="post-controls" aria-label="Post filters">
   <select id="categoryFilter" aria-label="카테고리">
     <option value="all">전체 태그</option>
-    <option value="Backend">Backend</option>
-    <option value="Java">Java</option>
-    <option value="Spring">Spring</option>
-    <option value="JPA">JPA</option>
-    <option value="Database">Database</option>
-    <option value="REST API">REST API</option>
-    <option value="API">API</option>
-    <option value="HTTP">HTTP</option>
-    <option value="Distributed Systems">Distributed Systems</option>
-    <option value="Observability">Observability</option>
-    <option value="Performance">Performance</option>
-    <option value="Kubernetes">Kubernetes</option>
-    <option value="AWS">AWS</option>
-    <option value="Docker">Docker</option>
-    <option value="Redis">Redis</option>
-    <option value="Testing">Testing</option>
+    {% for tag in sorted_tags %}
+      <option value="{{ tag[0] }}">{{ tag[0] }} ({{ tag[1] | size }})</option>
+    {% endfor %}
   </select>
   <label class="search-box" for="postSearch">
     <span aria-hidden="true">⌕</span>
     <input id="postSearch" type="search" placeholder="제목 또는 요약 검색">
   </label>
+  <button class="filter-reset" id="resetFilters" type="button">초기화</button>
 </section>
 
+<p class="filter-note">카테고리는 전체 글을 빠르게 좁히는 용도이고, 아래 태그 버튼은 세부 주제를 바로 고를 때 유용합니다.</p>
+
 <section class="post-categories" aria-label="Post tags">
-  {% assign sorted_tags = site.tags | sort %}
   {% for tag in sorted_tags %}
     <button type="button" data-tag="{{ tag[0] }}">#{{ tag[0] }}</button>
   {% endfor %}
@@ -48,6 +54,8 @@ permalink: /posts/
 <section class="post-count">
   총 <span id="visiblePostCount">{{ site.posts | size }}</span>개의 포스트가 있어요
 </section>
+
+<p class="filter-status" id="filterStatus" aria-live="polite">전체 글을 보고 있습니다.</p>
 
 <section class="archive-list">
   {% for post in site.posts %}
@@ -73,10 +81,12 @@ permalink: /posts/
 <script>
   const searchInput = document.querySelector("#postSearch");
   const categoryFilter = document.querySelector("#categoryFilter");
+  const resetFiltersButton = document.querySelector("#resetFilters");
   const tagButtons = [...document.querySelectorAll("[data-tag]")];
   const posts = [...document.querySelectorAll(".post-row")];
   const count = document.querySelector("#visiblePostCount");
   const emptyState = document.querySelector("#emptyState");
+  const filterStatus = document.querySelector("#filterStatus");
   const params = new URLSearchParams(window.location.search);
   let activeTag = "";
 
@@ -89,6 +99,10 @@ permalink: /posts/
       .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean);
+  }
+
+  function hasOption(select, value) {
+    return [...select.options].some((option) => option.value === value);
   }
 
   function syncQuery() {
@@ -105,6 +119,7 @@ permalink: /posts/
     const keyword = normalize(searchInput.value);
     const category = categoryFilter.value;
     let visible = 0;
+    const summary = [];
 
     posts.forEach((post) => {
       const text = normalize(`${post.dataset.title} ${post.dataset.excerpt}`);
@@ -120,11 +135,24 @@ permalink: /posts/
 
     count.textContent = visible;
     emptyState.hidden = visible !== 0;
+
+    if (category !== "all") summary.push(`카테고리: ${category}`);
+    if (activeTag) summary.push(`태그: #${activeTag}`);
+    if (searchInput.value.trim()) summary.push(`검색: "${searchInput.value.trim()}"`);
+    filterStatus.textContent = summary.length ? `현재 필터: ${summary.join(" · ")}` : "전체 글을 보고 있습니다.";
+
     syncQuery();
   }
 
   searchInput.addEventListener("input", applyFilters);
   categoryFilter.addEventListener("change", applyFilters);
+  resetFiltersButton.addEventListener("click", () => {
+    searchInput.value = "";
+    categoryFilter.value = "all";
+    activeTag = "";
+    tagButtons.forEach((item) => item.classList.remove("is-active"));
+    applyFilters();
+  });
   tagButtons.forEach((button) => {
     button.addEventListener("click", () => {
       activeTag = activeTag === button.dataset.tag ? "" : button.dataset.tag;
@@ -134,10 +162,15 @@ permalink: /posts/
   });
 
   if (params.get("q")) searchInput.value = params.get("q");
-  if (params.get("category")) categoryFilter.value = params.get("category");
+  if (params.get("category") && hasOption(categoryFilter, params.get("category"))) {
+    categoryFilter.value = params.get("category");
+  }
   if (params.get("tag")) {
-    activeTag = params.get("tag");
-    tagButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.tag === activeTag));
+    const requestedTag = params.get("tag");
+    if (tagButtons.some((item) => item.dataset.tag === requestedTag)) {
+      activeTag = requestedTag;
+      tagButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.tag === activeTag));
+    }
   }
 
   applyFilters();
