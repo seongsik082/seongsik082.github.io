@@ -842,10 +842,12 @@ section + section {
 .post-content {
   min-width: 0;
   grid-column: 1;
+  grid-row: 1;
 }
 
 .post-sidebar {
   grid-column: 2;
+  grid-row: 1;
   position: sticky;
   top: 94px;
   display: grid;
@@ -942,8 +944,8 @@ section + section {
 
 .post-header {
   max-width: 840px;
-  margin-bottom: 46px;
-  padding-bottom: 32px;
+  margin-bottom: 30px;
+  padding-bottom: 28px;
   border-bottom: 1px solid var(--line);
 }
 

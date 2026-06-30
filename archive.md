@@ -4,6 +4,7 @@ title: Posts
 permalink: /posts/
 ---
 
+{% assign sorted_tags = site.tags | sort %}
 {% assign topic_paths = site.data.topic_paths %}
 {% assign troubleshooting_paths = site.data.troubleshooting_paths %}
 
@@ -17,9 +18,16 @@ permalink: /posts/
 <section class="post-controls" aria-label="Post filters">
   <select id="topicFilter" aria-label="주제">
     <option value="all">전체 주제</option>
-    {% for topic in topic_paths %}
-      <option value="{{ topic.key }}">{{ topic.label }}</option>
-    {% endfor %}
+    <optgroup label="추천 주제">
+      {% for topic in topic_paths %}
+        <option value="topic:{{ topic.key }}">{{ topic.label }}</option>
+      {% endfor %}
+    </optgroup>
+    <optgroup label="전체 태그">
+      {% for tag in sorted_tags %}
+        <option value="tag:{{ tag[0] }}">{{ tag[0] }} ({{ tag[1] | size }})</option>
+      {% endfor %}
+    </optgroup>
   </select>
   <label class="search-box" for="postSearch">
     <span aria-hidden="true">⌕</span>
@@ -93,11 +101,24 @@ permalink: /posts/
     return [...select.options].some((option) => option.value === value);
   }
 
+  function selectedFilter() {
+    const value = topicFilter.value;
+    if (value === "all") return { type: "all", key: "", label: "전체 주제" };
+    const separator = value.indexOf(":");
+    return {
+      type: value.slice(0, separator),
+      key: value.slice(separator + 1),
+      label: topicFilter.selectedOptions[0]?.textContent || value
+    };
+  }
+
   function syncQuery() {
     const next = new URLSearchParams();
+    const selected = selectedFilter();
     if (searchInput.value.trim()) next.set("q", searchInput.value.trim());
-    if (topicFilter.value !== "all") next.set("topic", topicFilter.value);
-    if (activeTag) next.set("tag", activeTag);
+    if (selected.type === "topic") next.set("topic", selected.key);
+    if (selected.type === "tag") next.set("tag", selected.key);
+    if (activeTag && selected.type !== "tag") next.set("tag", activeTag);
     if (activeRoute) next.set("route", activeRoute);
     const query = next.toString();
     const url = query ? `${window.location.pathname}?${query}` : window.location.pathname;
@@ -106,8 +127,7 @@ permalink: /posts/
 
   function applyFilters() {
     const keyword = normalize(searchInput.value);
-    const topic = topicFilter.value;
-    const activeTopicLabel = topicFilter.selectedOptions[0]?.textContent || topic;
+    const selected = selectedFilter();
     let visible = 0;
     const summary = [];
 
@@ -117,10 +137,13 @@ permalink: /posts/
       const topics = parseTags(post.dataset.topics);
       const routes = parseTags(post.dataset.routes);
       const matchesKeyword = !keyword || text.includes(keyword);
-      const matchesTopic = topic === "all" || topics.includes(topic);
+      const matchesSelected =
+        selected.type === "all" ||
+        (selected.type === "topic" && topics.includes(selected.key)) ||
+        (selected.type === "tag" && tags.includes(selected.key));
       const matchesTag = !activeTag || tags.includes(activeTag);
       const matchesRoute = !activeRoute || routes.includes(activeRoute);
-      const show = matchesKeyword && matchesTopic && matchesTag && matchesRoute;
+      const show = matchesKeyword && matchesSelected && matchesTag && matchesRoute;
 
       post.hidden = !show;
       if (show) visible += 1;
@@ -129,8 +152,8 @@ permalink: /posts/
     count.textContent = visible;
     emptyState.hidden = visible !== 0;
 
-    if (topic !== "all") summary.push(`주제: ${activeTopicLabel}`);
-    if (activeTag) summary.push(`태그: #${activeTag}`);
+    if (selected.type !== "all") summary.push(`${selected.type === "tag" ? "태그" : "주제"}: ${selected.label}`);
+    if (activeTag && selected.type !== "tag") summary.push(`태그: #${activeTag}`);
     if (activeRoute) summary.push(`경로: ${activeRoute}`);
     if (searchInput.value.trim()) summary.push(`검색: "${searchInput.value.trim()}"`);
     filterStatus.textContent = summary.length ? `현재 필터: ${summary.join(" · ")}` : "전체 글을 보고 있습니다.";
@@ -151,11 +174,16 @@ permalink: /posts/
   if (params.get("q")) searchInput.value = params.get("q");
   if (params.get("topic")) {
     const requestedTopic = params.get("topic");
-    if (hasOption(topicFilter, requestedTopic)) {
-      topicFilter.value = requestedTopic;
+    if (hasOption(topicFilter, `topic:${requestedTopic}`)) {
+      topicFilter.value = `topic:${requestedTopic}`;
     }
   }
-  activeTag = params.get("tag") || params.get("category") || "";
+  const requestedTag = params.get("tag") || params.get("category") || "";
+  if (requestedTag && hasOption(topicFilter, `tag:${requestedTag}`)) {
+    topicFilter.value = `tag:${requestedTag}`;
+  } else {
+    activeTag = requestedTag;
+  }
   activeRoute = params.get("route") || "";
 
   applyFilters();
