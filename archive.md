@@ -4,7 +4,6 @@ title: Posts
 permalink: /posts/
 ---
 
-{% assign sorted_tags = site.tags | sort %}
 {% assign topic_paths = site.data.topic_paths %}
 {% assign troubleshooting_paths = site.data.troubleshooting_paths %}
 
@@ -15,47 +14,11 @@ permalink: /posts/
   </div>
 </section>
 
-<section class="archive-guides" aria-label="Quick routes">
-  <a class="archive-guide-card" href="{{ '/start-here/' | relative_url }}">
-    <strong>처음 읽기</strong>
-    <span>읽는 순서를 먼저 보고 싶다면 여기서 시작합니다.</span>
-  </a>
-  <a class="archive-guide-card" href="{{ '/topics/' | relative_url }}">
-    <strong>주제 허브</strong>
-    <span>Java, Spring, API, Database, 운영 주제를 영역별로 훑어볼 수 있습니다.</span>
-  </a>
-  <a class="archive-guide-card" href="{{ '/posts/?tag=Backend' | relative_url }}">
-    <strong>전체 백엔드 글</strong>
-    <span>필터 없이 최신 글부터 빠르게 훑고 싶을 때 사용하면 됩니다.</span>
-  </a>
-</section>
-
-<section class="archive-guides" aria-label="Troubleshooting routes">
-  {% for route in troubleshooting_paths %}
-    <a class="archive-guide-card" href="{{ '/posts/' | relative_url }}?route={{ route.key }}">
-      <strong>{{ route.label }}</strong>
-      <span>{{ route.title }}</span>
-    </a>
-  {% endfor %}
-</section>
-
-<section class="topic-shortcuts" aria-label="Main topics">
-  {% for topic in topic_paths %}
-    <button type="button" data-topic-filter="{{ topic.key }}" data-topic-label="{{ topic.label }}">{{ topic.label }}</button>
-  {% endfor %}
-</section>
-
-<section class="topic-shortcuts route-shortcuts" aria-label="Troubleshooting filters">
-  {% for route in troubleshooting_paths %}
-    <button type="button" data-route-filter="{{ route.key }}" data-route-label="{{ route.label }}">{{ route.label }}</button>
-  {% endfor %}
-</section>
-
 <section class="post-controls" aria-label="Post filters">
-  <select id="categoryFilter" aria-label="카테고리">
-    <option value="all">전체 태그</option>
-    {% for tag in sorted_tags %}
-      <option value="{{ tag[0] }}">{{ tag[0] }} ({{ tag[1] | size }})</option>
+  <select id="topicFilter" aria-label="주제">
+    <option value="all">전체 주제</option>
+    {% for topic in topic_paths %}
+      <option value="{{ topic.key }}">{{ topic.label }}</option>
     {% endfor %}
   </select>
   <label class="search-box" for="postSearch">
@@ -63,14 +26,6 @@ permalink: /posts/
     <input id="postSearch" type="search" placeholder="제목 또는 요약 검색">
   </label>
   <button class="filter-reset" id="resetFilters" type="button">초기화</button>
-</section>
-
-<p class="filter-note">주제 버튼은 여러 태그를 묶은 읽기 경로이고, 카테고리와 태그는 더 세부적으로 좁힐 때 유용합니다.</p>
-
-<section class="post-categories" aria-label="Post tags">
-  {% for tag in sorted_tags %}
-    <button type="button" data-tag="{{ tag[0] }}">#{{ tag[0] }}</button>
-  {% endfor %}
 </section>
 
 <section class="post-count">
@@ -113,19 +68,15 @@ permalink: /posts/
 
 <script>
   const searchInput = document.querySelector("#postSearch");
-  const categoryFilter = document.querySelector("#categoryFilter");
+  const topicFilter = document.querySelector("#topicFilter");
   const resetFiltersButton = document.querySelector("#resetFilters");
-  const topicButtons = [...document.querySelectorAll("[data-topic-filter]")];
-  const routeButtons = [...document.querySelectorAll("[data-route-filter]")];
-  const tagButtons = [...document.querySelectorAll("[data-tag]")];
   const posts = [...document.querySelectorAll(".post-row")];
   const count = document.querySelector("#visiblePostCount");
   const emptyState = document.querySelector("#emptyState");
   const filterStatus = document.querySelector("#filterStatus");
   const params = new URLSearchParams(window.location.search);
-  let activeTopic = "";
-  let activeRoute = "";
   let activeTag = "";
+  let activeRoute = "";
 
   function normalize(value) {
     return (value || "").toLowerCase();
@@ -145,10 +96,9 @@ permalink: /posts/
   function syncQuery() {
     const next = new URLSearchParams();
     if (searchInput.value.trim()) next.set("q", searchInput.value.trim());
-    if (activeTopic) next.set("topic", activeTopic);
-    if (activeRoute) next.set("route", activeRoute);
-    if (categoryFilter.value !== "all") next.set("category", categoryFilter.value);
+    if (topicFilter.value !== "all") next.set("topic", topicFilter.value);
     if (activeTag) next.set("tag", activeTag);
+    if (activeRoute) next.set("route", activeRoute);
     const query = next.toString();
     const url = query ? `${window.location.pathname}?${query}` : window.location.pathname;
     window.history.replaceState({}, "", url);
@@ -156,9 +106,8 @@ permalink: /posts/
 
   function applyFilters() {
     const keyword = normalize(searchInput.value);
-    const category = categoryFilter.value;
-    const activeTopicButton = topicButtons.find((item) => item.dataset.topicFilter === activeTopic);
-    const activeRouteButton = routeButtons.find((item) => item.dataset.routeFilter === activeRoute);
+    const topic = topicFilter.value;
+    const activeTopicLabel = topicFilter.selectedOptions[0]?.textContent || topic;
     let visible = 0;
     const summary = [];
 
@@ -168,11 +117,10 @@ permalink: /posts/
       const topics = parseTags(post.dataset.topics);
       const routes = parseTags(post.dataset.routes);
       const matchesKeyword = !keyword || text.includes(keyword);
-      const matchesTopic = !activeTopic || topics.includes(activeTopic);
-      const matchesRoute = !activeRoute || routes.includes(activeRoute);
-      const matchesCategory = category === "all" || tags.includes(category);
+      const matchesTopic = topic === "all" || topics.includes(topic);
       const matchesTag = !activeTag || tags.includes(activeTag);
-      const show = matchesKeyword && matchesTopic && matchesRoute && matchesCategory && matchesTag;
+      const matchesRoute = !activeRoute || routes.includes(activeRoute);
+      const show = matchesKeyword && matchesTopic && matchesTag && matchesRoute;
 
       post.hidden = !show;
       if (show) visible += 1;
@@ -181,10 +129,9 @@ permalink: /posts/
     count.textContent = visible;
     emptyState.hidden = visible !== 0;
 
-    if (activeTopic) summary.push(`주제: ${activeTopicButton?.dataset.topicLabel || activeTopic}`);
-    if (activeRoute) summary.push(`증상: ${activeRouteButton?.dataset.routeLabel || activeRoute}`);
-    if (category !== "all") summary.push(`카테고리: ${category}`);
+    if (topic !== "all") summary.push(`주제: ${activeTopicLabel}`);
     if (activeTag) summary.push(`태그: #${activeTag}`);
+    if (activeRoute) summary.push(`경로: ${activeRoute}`);
     if (searchInput.value.trim()) summary.push(`검색: "${searchInput.value.trim()}"`);
     filterStatus.textContent = summary.length ? `현재 필터: ${summary.join(" · ")}` : "전체 글을 보고 있습니다.";
 
@@ -192,65 +139,24 @@ permalink: /posts/
   }
 
   searchInput.addEventListener("input", applyFilters);
-  categoryFilter.addEventListener("change", applyFilters);
+  topicFilter.addEventListener("change", applyFilters);
   resetFiltersButton.addEventListener("click", () => {
     searchInput.value = "";
-    categoryFilter.value = "all";
-    activeTopic = "";
-    activeRoute = "";
+    topicFilter.value = "all";
     activeTag = "";
-    topicButtons.forEach((item) => item.classList.remove("is-active"));
-    routeButtons.forEach((item) => item.classList.remove("is-active"));
-    tagButtons.forEach((item) => item.classList.remove("is-active"));
+    activeRoute = "";
     applyFilters();
-  });
-  topicButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      activeTopic = activeTopic === button.dataset.topicFilter ? "" : button.dataset.topicFilter;
-      topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
-      applyFilters();
-    });
-  });
-  routeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      activeRoute = activeRoute === button.dataset.routeFilter ? "" : button.dataset.routeFilter;
-      routeButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.routeFilter === activeRoute));
-      applyFilters();
-    });
-  });
-  tagButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      activeTag = activeTag === button.dataset.tag ? "" : button.dataset.tag;
-      tagButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.tag === activeTag));
-      applyFilters();
-    });
   });
 
   if (params.get("q")) searchInput.value = params.get("q");
   if (params.get("topic")) {
     const requestedTopic = params.get("topic");
-    if (topicButtons.some((item) => item.dataset.topicFilter === requestedTopic)) {
-      activeTopic = requestedTopic;
-      topicButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.topicFilter === activeTopic));
+    if (hasOption(topicFilter, requestedTopic)) {
+      topicFilter.value = requestedTopic;
     }
   }
-  if (params.get("route")) {
-    const requestedRoute = params.get("route");
-    if (routeButtons.some((item) => item.dataset.routeFilter === requestedRoute)) {
-      activeRoute = requestedRoute;
-      routeButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.routeFilter === activeRoute));
-    }
-  }
-  if (params.get("category") && hasOption(categoryFilter, params.get("category"))) {
-    categoryFilter.value = params.get("category");
-  }
-  if (params.get("tag")) {
-    const requestedTag = params.get("tag");
-    if (tagButtons.some((item) => item.dataset.tag === requestedTag)) {
-      activeTag = requestedTag;
-      tagButtons.forEach((item) => item.classList.toggle("is-active", item.dataset.tag === activeTag));
-    }
-  }
+  activeTag = params.get("tag") || params.get("category") || "";
+  activeRoute = params.get("route") || "";
 
   applyFilters();
 </script>
