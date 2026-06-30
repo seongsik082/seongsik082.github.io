@@ -10,9 +10,8 @@ permalink: /posts/
 
 <section class="posts-hero">
   <div class="posts-hero-inner">
-    <p class="eyebrow">Archive</p>
-    <h1>백엔드 개발 주제별로 글을 탐색해보세요.</h1>
-    <p>Java, Spring, Database, REST API, 운영 이슈를 태그와 검색으로 빠르게 찾을 수 있습니다.</p>
+    <h1>Posts</h1>
+    <p>백엔드 학습 노트와 문제 해결 기록을 모아둔 공간입니다.</p>
   </div>
 </section>
 
