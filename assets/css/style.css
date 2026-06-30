@@ -164,8 +164,14 @@ h3 {
 }
 
 .home-hero {
-  padding: 32px 0 52px;
-  border-bottom: 1px solid var(--line);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: -56px;
+  padding: 112px max(20px, calc((100vw - 880px) / 2)) 96px;
+  border-bottom: 0;
+  background:
+    linear-gradient(90deg, rgba(18, 22, 30, 0.82), rgba(18, 22, 30, 0.48) 58%, rgba(18, 22, 30, 0.28)),
+    url("../images/posts-hero.png") center / cover no-repeat;
 }
 
 .home-hero-inner {
@@ -173,12 +179,13 @@ h3 {
 }
 
 .home-hero .eyebrow {
-  color: var(--accent);
+  color: #b9ccff;
 }
 
 .home-hero h1 {
   max-width: 720px;
   margin-bottom: 16px;
+  color: #ffffff;
   font-size: clamp(36px, 6vw, 58px);
   font-weight: 850;
   line-height: 1.18;
@@ -187,7 +194,7 @@ h3 {
 .home-hero-summary {
   max-width: 640px;
   margin: 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 18px;
   font-weight: 500;
 }
@@ -1082,8 +1089,9 @@ section + section {
   }
 
   .home-hero {
-    padding-top: 18px;
-    padding-bottom: 42px;
+    margin-top: -36px;
+    padding: 78px 20px 70px;
+    background-position: 58% center;
   }
 
   .post-controls {
