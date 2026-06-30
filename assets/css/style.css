@@ -125,6 +125,10 @@ a:hover {
   padding: 64px 0 88px;
 }
 
+.layout-post .site-main {
+  width: min(1120px, calc(100% - 40px));
+}
+
 h1,
 h2,
 h3,
@@ -842,9 +846,11 @@ section + section {
 
 .post-content {
   min-width: 0;
+  grid-column: 1;
 }
 
 .post-sidebar {
+  grid-column: 2;
   position: sticky;
   top: 94px;
   display: grid;
@@ -1094,6 +1100,10 @@ section + section {
     padding-top: 42px;
   }
 
+  .layout-post .site-main {
+    width: min(1120px, calc(100% - 40px));
+  }
+
   .hero {
     padding-bottom: 42px;
   }
@@ -1132,6 +1142,7 @@ section + section {
   .post-sidebar {
     position: static;
     order: 2;
+    grid-column: auto;
   }
 
   .project-card dl,
