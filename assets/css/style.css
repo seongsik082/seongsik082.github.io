@@ -885,10 +885,25 @@ section + section {
 }
 
 .post-toc summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: var(--accent);
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
+  list-style: none;
+}
+
+.post-toc summary::after {
+  margin-left: auto;
+  content: "+";
+  font-size: 18px;
+  line-height: 1;
+}
+
+.post-toc[open] summary::after {
+  content: "−";
 }
 
 .post-toc nav {
@@ -943,6 +958,13 @@ section + section {
   background: var(--code-bg);
   color: #f7f7f7;
   padding: 20px;
+}
+
+.content pre code {
+  overflow-wrap: normal;
+  background: transparent;
+  color: inherit;
+  padding: 0;
 }
 
 .post-content,
@@ -1206,6 +1228,17 @@ section + section {
     grid-column: auto;
     grid-row: auto;
     position: static;
+  }
+
+  .post-toc summary {
+    display: flex;
+    min-height: 44px;
+  }
+
+  .post-toc a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
   }
 
   .post-content {

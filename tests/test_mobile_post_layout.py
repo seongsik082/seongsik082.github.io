@@ -57,6 +57,20 @@ class MobilePostLayoutTests(unittest.TestCase):
         self.assertIn("overflow-x: auto", code)
         self.assertIn("overflow-wrap: anywhere", CSS)
 
+    def test_code_blocks_keep_preformatted_scrolling_style(self):
+        code = css_rule(CSS, ".content pre code")
+        self.assertIn("background: transparent", code)
+        self.assertIn("color: inherit", code)
+        self.assertIn("overflow-wrap: normal", code)
+        self.assertIn("padding: 0", code)
+
+    def test_mobile_toc_controls_have_touch_targets(self):
+        source = mobile_css()
+        for selector in (".post-toc summary", ".post-toc a"):
+            rule = css_rule(source, selector)
+            self.assertIn("min-height: 44px", rule)
+            self.assertIn("display: flex", rule)
+
     def test_mobile_header_is_single_row_and_keeps_core_links(self):
         source = mobile_css()
         header_rule = css_rule(source, ".site-header")
