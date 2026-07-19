@@ -24,8 +24,9 @@ def mobile_css() -> str:
 
 class MobilePostLayoutTests(unittest.TestCase):
     def test_template_order_is_toc_content_support(self):
-        self.assertIn('class="post-toc"', POST_LAYOUT)
-        toc = POST_LAYOUT.index('class="post-toc"')
+        toc_match = re.search(r'class="[^"]*\bpost-toc\b[^"]*"', POST_LAYOUT)
+        self.assertIsNotNone(toc_match)
+        toc = toc_match.start()
         content = POST_LAYOUT.index('class="content post-content"')
         sidebar = POST_LAYOUT.index('class="post-sidebar"')
         self.assertLess(toc, content)

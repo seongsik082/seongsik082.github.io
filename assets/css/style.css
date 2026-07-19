@@ -835,21 +835,26 @@ section + section {
 .post-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
-  gap: 32px;
+  grid-template-areas:
+    "content toc"
+    "content sidebar";
+  gap: 14px 32px;
   align-items: start;
 }
 
+.post-toc {
+  grid-area: toc;
+  position: sticky;
+  top: 94px;
+}
+
 .post-content {
+  grid-area: content;
   min-width: 0;
-  grid-column: 1;
-  grid-row: 1;
 }
 
 .post-sidebar {
-  grid-column: 2;
-  grid-row: 1;
-  position: sticky;
-  top: 94px;
+  grid-area: sidebar;
   display: grid;
   gap: 14px;
 }
@@ -863,6 +868,17 @@ section + section {
 
 :root.dark .post-side-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--soft));
+}
+
+.post-toc summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.post-toc nav {
+  margin-top: 12px;
 }
 
 .post-side-card ul {
@@ -1135,12 +1151,27 @@ section + section {
 
   .post-layout {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "toc"
+      "content"
+      "sidebar";
+    gap: 24px;
+  }
+
+  .post-toc {
+    grid-column: auto;
+    grid-row: auto;
+    position: static;
+  }
+
+  .post-content {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .post-sidebar {
-    position: static;
-    order: 2;
     grid-column: auto;
+    grid-row: auto;
   }
 
   .project-card dl,

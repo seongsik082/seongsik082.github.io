@@ -49,10 +49,16 @@ layout: default
   </header>
 
   <div class="post-layout">
-    <aside class="post-sidebar">
-      <div class="post-side-card" data-post-toc>
-        <p class="section-label">이 글에서 다루는 내용</p>
-      </div>
+    <details class="post-toc post-side-card" open>
+      <summary>이 글에서 다루는 내용</summary>
+      <nav data-post-toc-list aria-label="글 목차"></nav>
+    </details>
+
+    <div class="content post-content">
+      {{ content }}
+    </div>
+
+    <aside class="post-sidebar" aria-label="관련 탐색">
       {% if matched_route_count > 0 %}
         <div class="post-side-card">
           <p class="section-label">도움이 되는 상황</p>
@@ -78,10 +84,6 @@ layout: default
         <a class="sidebar-link" href="{{ '/about/' | relative_url }}">블로그 소개 보기</a>
       </div>
     </aside>
-
-    <div class="content post-content">
-      {{ content }}
-    </div>
   </div>
 
   {% if primary_tag != "" %}

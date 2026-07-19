@@ -97,9 +97,10 @@
         localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
       });
 
-      const toc = document.querySelector("[data-post-toc]");
+      const toc = document.querySelector(".post-toc");
+      const tocList = document.querySelector("[data-post-toc-list]");
       const articleContent = document.querySelector(".post-content");
-      if (toc && articleContent) {
+      if (toc && tocList && articleContent) {
         const headings = [...articleContent.querySelectorAll("h2")];
         if (headings.length === 0) {
           toc.hidden = true;
@@ -114,7 +115,11 @@
             item.appendChild(link);
             list.appendChild(item);
           });
-          toc.appendChild(list);
+          tocList.appendChild(list);
+
+          if (window.matchMedia("(max-width: 720px)").matches) {
+            toc.removeAttribute("open");
+          }
         }
       }
     </script>
