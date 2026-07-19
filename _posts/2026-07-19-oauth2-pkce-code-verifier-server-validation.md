@@ -25,6 +25,8 @@ JD Proof의 설계는 다르다. 브라우저는 사용자의 화면일 뿐 OAut
 
 그래서 JD Proof의 시나리오는 `state`는 SHA-256 해시로, `code_verifier`는 애플리케이션의 암호화 키로 암호문으로 저장한다. 둘 다 짧은 만료 시간과 한 번만 사용한다는 조건을 갖는다. `state`가 URL에 보인다는 사실도 원문 DB 저장의 이유가 되지 않는다. callback에서 받은 원문을 해시해 찾고, 일치하면 그 시도를 소비 처리한다.
 
+아래 SQL은 이 설계 시나리오의 제안 예시이며, 현재 구현이나 측정된 운영 결과가 아니다.
+
 ```sql
 CREATE TABLE oauth_link_attempt (
   id UUID PRIMARY KEY,
@@ -44,7 +46,7 @@ CREATE TABLE oauth_link_attempt (
 
 ## callback에서 멈춰야 하는 순서
 
-흐름을 요청 단위로 적으면 다음과 같다.
+아래 요청 흐름은 이 설계 시나리오의 제안 예시이며, 현재 구현이나 측정된 운영 결과가 아니다.
 
 ```text
 브라우저 → GET /integrations/{provider}/authorize
