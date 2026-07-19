@@ -1,90 +1,125 @@
 ---
-title: "Redis RDB와 AOF를 섞을 때 장애 복구 시 데이터 손실 범위를 계산하는 법"
+title: "가져오기 작업 상태를 Redis에만 두면 복구가 어려운 이유"
 date: 2026-07-19 08:52:00 +0900
-tags: [Redis, Database, Operations, Backend]
-excerpt: "Redis persistence를 켰다는 사실만으로 복구 시점이 보장되지는 않습니다. RDB snapshot 주기, AOF fsync 정책, rewrite로 인한 latency와 백업 절차를 기준으로 장애 때 잃을 수 있는 데이터 범위를 계산하고 RDB·AOF·원본 DB의 역할을 나누는 방법을 정리합니다."
+tags: [Redis, PostgreSQL, Operations, Backend]
+excerpt: "JD Proof의 import_job을 원본 상태로 두고 Redis 진행률·lease를 캐시로 분리합니다. RDB·AOF의 RPO와 복구 검증 계획을 통해 작업 상태를 다시 판단하는 기준을 정리합니다."
 ---
 
-## 문제 상황
+## 문제 상황: 화면은 끝났는데 작업 기록이 없다
 
-Redis를 세션과 작업 상태 저장소로 사용하던 서버가 재시작된 뒤 최근 몇 분의 데이터가 사라졌습니다. 설정에는 `save`가 있고 `dump.rdb` 파일도 존재했기 때문에 팀은 복구가 완전할 것으로 생각했습니다. 하지만 마지막 RDB snapshot 이후에 기록된 변경은 파일에 없었고, AOF도 꺼져 있었습니다.
+JD Proof는 채용 공고를 가져와 저장하고 처리 상태를 보여 주는 서비스라고 가정한다. 사용자의 요청으로 작업이 만들어지고, 작업자는 외부 공고를 읽어 `job_post`에 반영한다. 화면에는 `37%`, `완료`, `실패`를 빨리 보여 주고 싶다. 이때 Redis 하나에 진행률과 최종 상태를 함께 넣으면 구현은 단순해 보인다.
 
-반대로 AOF를 켠 뒤에는 데이터 손실은 줄었지만 rewrite 시점마다 latency가 튀고 디스크 사용량이 빠르게 증가했습니다. persistence 설정은 “켜짐/꺼짐”의 선택이 아니라, 장애 때 어느 시점까지 복구할지와 정상 쓰기 경로에서 어느 정도의 지연을 허용할지 정하는 운영 계약입니다.
+하지만 Redis 재시작, TTL 만료, 잘못된 삭제 뒤 `job:{id}:status`가 사라지면 그 작업이 공고를 저장했는지, 중간에 멈췄는지, 다시 실행해도 되는지를 알 수 없다. 진행률 유실은 화면을 다시 만들 문제지만, 최종 상태 유실은 중복 import로 이어진다. 결제·정산·공고 import의 최종 상태처럼 재생성할 수 없는 업무 판단을 Redis의 유일한 원본에 두면 안 되는 이유다.
 
-## RDB와 AOF의 복구 모델
+이 글의 **사례 상태: 설계 시나리오**다. 측정한 장애·성능 결과는 없다. 대신 작은 데이터셋에서 snapshot, Redis 재시작, `import_job` 상태와 key 수 대조를 수행할 복구 실험을 계획한다. 목표는 Redis 파일의 존재가 아니라, 재시작 뒤 다음 행동을 PostgreSQL 기록으로 결정할 수 있는지다.
 
-RDB는 특정 시점의 dataset을 하나의 snapshot으로 저장합니다. 예를 들어 300초마다 snapshot을 만들면 비정상 종료 시 마지막 snapshot 이후의 변경은 잃을 수 있습니다. snapshot 파일은 백업과 다른 리전에 복사하기 쉽고, 큰 데이터셋을 빠르게 시작하는 데 유리하지만 최신 write를 모두 담지는 않습니다.
+## 원본 상태는 PostgreSQL에 남긴다
 
-AOF(Append Only File)는 Redis가 받은 write 명령을 기록하고 시작 시 다시 재생합니다. `appendfsync everysec`라면 일반적으로 마지막 약 1초 범위의 write 손실을 목표로 할 수 있지만, 디스크 고장·파일시스템·호스트 손상까지 자동으로 해결한다는 뜻은 아닙니다. `appendfsync always`는 더 강한 내구성을 목표로 하지만 모든 write 경로의 fsync 비용과 latency를 감수해야 합니다.
+JD Proof에서 PostgreSQL의 `import_job`이 내구성 있는 원본 상태다. 요청 트랜잭션에서 행을 먼저 만들고 `requested`를 기록한다. 작업 시작에는 `started_at`과 `status`를, 완료에는 공고 저장 결과와 완료 상태를 서비스의 트랜잭션 경계에 맞춰 확정한다. 작업자가 죽어도 다음 점검자는 이 행으로 미완료 작업을 찾는다. `idempotency_key`는 같은 요청의 중복 생성을 막는 업무 키다.
 
-두 방식을 함께 켜면 복구 시 AOF가 더 완전한 dataset을 재구성하는 데 사용되고, RDB는 빠른 restart와 별도 백업에 활용할 수 있습니다. 중요한 데이터라면 Redis 공식 문서처럼 두 방식을 함께 검토할 수 있지만, persistence가 원본 DB의 백업을 대신하지는 않습니다.
-
-## 설정 예시와 trade-off
-
-```conf
-# RDB snapshot: 5분 동안 100개 이상 변경되면 생성
-save 300 100
-
-# AOF 활성화
-appendonly yes
-appendfsync everysec
+```sql
+CREATE TABLE import_job (
+  id UUID PRIMARY KEY,
+  job_post_id UUID NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  requested_at TIMESTAMPTZ NOT NULL,
+  started_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  failure_code VARCHAR(80),
+  idempotency_key VARCHAR(100) NOT NULL UNIQUE
+);
 ```
 
-이 설정을 보고 “최대 1초만 잃는다”고 단정하면 안 됩니다. RDB 생성이 늦어지거나 AOF rewrite가 실패할 수 있고, 프로세스가 아니라 디스크 자체가 손상되면 로컬 파일을 읽을 수 없습니다. 운영 문서에는 다음처럼 RPO를 명시해야 합니다.
+`status`는 `requested`, `running`, `completed`, `failed`처럼 업무 의미를 가진 값이다. 화면이 진행률을 찾지 못하는 일과 DB가 `completed`를 보장하는 일은 다르다. 최종 성공은 Redis 쓰기 여부가 아니라 DB 행과 공고 저장 결과로 판단한다. Redis가 비어도 DB에서 상태를 읽어 화면을 만들고, 캐시와 DB가 다르면 DB를 우선한다.
 
-- 캐시 데이터: persistence를 끄고 원본 재생성 시간을 관리한다.
-- 몇 분의 손실이 가능한 세션·임시 상태: RDB 주기와 외부 백업 주기를 관리한다.
-- 수초 이하의 손실도 큰 작업 상태: AOF fsync 정책과 원본 DB 이중화를 함께 검토한다.
-- 결제·정산 같은 원장 데이터: Redis를 유일한 원본으로 두지 않는다.
+## Redis key 계약: 진행률과 lease만 맡긴다
 
-## rewrite가 latency를 만드는 이유
+Redis에는 사라져도 되는 빠른 보조 상태만 둔다. TTL은 값이 사라져도 DB로 회복할 수 있다는 계약이다.
 
-RDB snapshot과 AOF rewrite는 background child process를 만들기 위해 `fork()`를 사용합니다. dataset이 크면 fork 자체가 main thread에 지연을 만들고, copy-on-write로 인해 write가 많은 동안 메모리 사용량이 증가할 수 있습니다. AOF의 `everysec`도 fsync가 오래 걸리면 write 경로가 기다리거나 버퍼가 쌓여 latency가 커질 수 있습니다.
+```text
+job:{id}:progress  → 화면 표시용 진행률, TTL 10분
+job:{id}:lease     → 작업자 중복 실행 방지용 lease, TTL과 갱신 규칙 필요
+원본 상태          → PostgreSQL import_job
+```
 
-따라서 persistence 장애를 데이터 손실만으로 보지 말고 다음 지표를 같이 봐야 합니다.
+`progress`에는 처리 공고 수와 마지막 갱신 시각처럼 기다리는 동안만 필요한 값을 둔다. 10분 뒤 없어져도 완료 여부는 `import_job`에서 읽는다. 진행률을 다시 계산하지 못하면 화면은 갱신 중으로 표시할 수 있지만, 이미 끝난 import를 다시 시작해서는 안 된다.
+
+`lease`는 같은 `id`를 동시에 실행하지 않게 하는 짧은 소유권이다. 다음은 **초기 설계값이며 관측된 운영 결과가 아니다.** 작업자는 worker ID를 값으로 하여 먼저 60초 lease를 얻는다.
+
+```redis
+SET job:{id}:lease {workerId} NX EX 60
+```
+
+그 뒤 20초마다 저장된 값이 자신의 `{workerId}`와 같을 때만 TTL을 60초로 되돌리는 compare-and-expire Lua 연산을 호출한다.
+
+```lua
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+  return redis.call("EXPIRE", KEYS[1], ARGV[2])
+end
+return 0
+```
+
+호출 값은 `KEYS[1]=job:{id}:lease`, `ARGV[1]={workerId}`, `ARGV[2]=60`이다. 반환값이 `0`이면 작업자는 즉시 처리를 멈추고 PostgreSQL의 `import_job`과 공고 저장 결과를 대조해 재개·실패·정리 여부를 결정한다. 단순 `DEL`은 만료 뒤 다른 작업자가 얻은 lease를 이전 작업자가 지울 수 있으므로 쓰지 않는다. 60초 TTL과 20초 갱신은 실제 job 처리 시간, 지연, 장애 감지 시간을 보고 검증·조정할 시작 계약일 뿐 측정 근거가 아니다.
+
+DB 상태 변경과 Redis lease 획득은 한 저장소의 원자 연산으로 묶을 수 없다. 따라서 lease를 얻어도 현재 DB 상태와 `idempotency_key`를 확인하고 공고 저장을 멱등하게 만든다. Redis를 비웠을 때 잠시 경쟁하더라도 DB 제약과 상태 전이가 최종 중복을 막는다.
+
+## RDB와 AOF가 돕는 범위
+
+Redis persistence는 Redis 메모리 데이터를 디스크에 남기는 기능이다. RDB는 지정 시점의 dataset을 저장하는 snapshot 기반 방식이다. 마지막 snapshot 뒤의 `progress`나 `lease`는 비정상 종료 뒤 사라질 수 있다. 이 설계에서는 그 값이 사라져도 DB에서 작업을 판단하므로 RDB의 복구 시점이 import 완료 시점이 되지 않는다.
+
+AOF는 받은 write 명령을 기록하고 재시작 때 재생한다. `appendfsync everysec`은 재난에서 최근 약 1초의 write를 잃을 수 있다. 이는 전체 시스템의 내구성 보장이 아니다. 디스크·호스트·파일시스템 손상이나 잘못된 명령을 없애지 않으며, PostgreSQL의 백업이나 replica를 대신하지도 않는다. JD Proof에서 AOF는 보조 Redis 상태의 손실 창을 줄이는 선택일 뿐 `import_job`의 내구성을 위임하는 근거가 아니다.
+
+RDB와 AOF를 함께 켜면 재시작 때 더 완전한 AOF로 dataset을 재구성할 수 있고, RDB는 snapshot 복구와 별도 보관에 유용하다. 그러나 둘을 켰다는 사실은 원본 DB를 복구할 수 있다는 뜻이 아니다. PostgreSQL은 별도 백업 정책, 복구 지점 목표, replica 또는 고가용성 설계를 가져야 한다. Redis 파일도 같은 인스턴스·볼륨에만 두지 말고 필요하면 외부 보관과 리허설 대상으로 다룬다.
+
+## RPO 비교: 무엇을 잃어도 되는가
+
+RPO는 장애 때 허용할 수 있는 데이터 손실 시점이다. 아래 표는 설계 판단용이며 특정 서버의 측정 결과가 아니다. “파일이 있는가”보다 “잃은 값을 다시 만들 수 있는가”를 먼저 본다.
+
+| 선택 | 잃어도 되는 정보 | 복구 기준 | 운영 비용 |
+| --- | --- | --- | --- |
+| RDB만 사용 | 마지막 snapshot 뒤의 `progress`, 만료된 lease 같은 보조 값 | snapshot 뒤 `import_job`의 `requested`·`running`을 조회해 재개 또는 실패 처리 | snapshot 주기, 외부 RDB 보관, fork·재시작 검증 |
+| AOF `everysec` | 재난 시 최근 약 1초의 Redis write와 재생성 가능한 보조 값 | AOF가 로드돼도 DB 상태를 정답으로 삼아 key를 다시 채우고 lease를 새로 판단 | AOF 파일 크기, fsync 지연, rewrite 상태, 디스크 여유 |
+| Redis를 캐시로만 사용 | 모든 `progress`, lease, 캐시된 상태 표현 | Redis를 비운 뒤 `import_job`과 공고 저장 결과로 화면·재시도 대상을 재생성 | cache warm-up, TTL, 멱등 처리, DB 조회 부하 |
+
+공고 import의 `completed`는 어느 행의 유실 허용값도 아니다. `completed_at`, `failure_code`, `idempotency_key`와 저장 결과는 PostgreSQL의 백업·복제·복구 절차로 보호한다. 이 표는 Redis 보조 데이터의 손실 범위만 설명한다.
+
+## persistence 비용과 운영 확인
+
+RDB snapshot과 AOF rewrite는 `fork()`를 사용한다. dataset이 크면 fork가 응답 지연을 만들고, copy-on-write 때문에 쓰기가 많은 동안 메모리 비용이 커질 수 있다. AOF의 write와 `fdatasync`도 지연 원인이다. `everysec`에서 fsync가 길어지면 write가 지연될 수 있다. AOF는 같은 dataset의 RDB보다 파일이 대체로 크고 fsync 정책에 따라 더 느릴 수 있다. 그래서 최종 상태를 지키려는 이유만으로 Redis persistence 비용을 선택하지 않는다.
+
+운영에서는 다음을 확인한다.
 
 ```text
 INFO persistence
 
-rdb_bgsave_in_progress
 rdb_last_bgsave_status
-aof_rewrite_in_progress
 aof_last_bgrewrite_status
 aof_pending_bio_fsync
 ```
 
-rewrite가 반복 실패하는데 자동 재시도만 계속하면 디스크가 가득 차거나 fork 지연이 커질 수 있습니다. Redis latency monitor, 명령 처리 시간, 디스크 사용량, fork 시간과 함께 확인하고, 큰 rewrite와 백업 작업이 업무 peak 시간에 겹치지 않게 예약합니다.
+`INFO persistence`는 snapshot·rewrite·AOF 상태의 출발점이다. `rdb_last_bgsave_status`는 마지막 RDB 생성 실패 방치 여부를, `aof_last_bgrewrite_status`는 rewrite 성공 여부를 본다. `aof_pending_bio_fsync`는 대기 중인 백그라운드 fsync를 보여 준다. 값이 계속 쌓이는지와 요청 지연, 디스크 여유를 같은 시점에 기록한다. 단일 임계값은 아직 정하지 않는다.
 
-## 백업과 전환에서 자주 나는 실수
+## 아직 실행하지 않은 복구 리허설 계획
 
-첫 번째는 RDB 파일이 같은 서버에 있다는 이유만으로 백업이라고 부르는 것입니다. 인스턴스나 디스크가 사라지면 같은 디스크의 파일도 함께 사라집니다. RDB를 다른 노드나 object storage로 복사하고, 실제로 새 Redis를 띄워 복구하는 리허설을 해야 합니다.
+작은 데이터셋과 별도 테스트 Redis에서만 다음을 실행할 계획이다. production Redis나 실제 공고 데이터를 멈추지 않는다.
 
-두 번째는 RDB에서 AOF로 바꾸면서 설정 파일을 영구 반영하지 않는 것입니다. live server에서 AOF를 켰다가 재시작하면 설정이 원래대로 돌아갈 수 있으므로, 런타임 설정과 `redis.conf` 또는 관리 시스템의 선언을 일치시켜야 합니다. 전환 전에는 기존 RDB를 별도로 보관하고, 재시작 뒤 key 수와 핵심 샘플 데이터를 비교합니다.
+1. PostgreSQL에 `requested`, `running`, `completed`, `failed` 작업과 `idempotency_key`, 공고 저장 결과를 만든다. Redis에는 일부 progress와 lease를 넣는다.
+2. RDB snapshot 경우와 AOF `everysec` 경우를 준비하고 snapshot 전후·AOF write 직후 key를 기록한다. 측정하지 않은 손실 시간이나 latency 수치는 쓰지 않는다.
+3. Redis를 중지·재시작한 뒤 `INFO persistence`, `rdb_last_bgsave_status`, `aof_last_bgrewrite_status`, `aof_pending_bio_fsync`, rewrite 상태를 확인한다.
+4. 재시작 전후 Redis key 수와 progress·lease 존재를 비교하고, PostgreSQL의 행 수·상태·완료 시각·실패 코드·공고 저장 결과와 대조한다.
+5. Redis를 비운 캐시 전용 경우에도 DB로 화면을 다시 만들고, 오래된 `running`을 정책대로 처리하며 동일 멱등 키가 중복 import를 만들지 않는지 확인한다.
 
-세 번째는 AOF rewrite 중 파일을 무작정 복사하는 것입니다. Redis 7 이상은 base AOF와 increment 파일, manifest를 함께 관리하므로 rewrite 상태에서 일관되지 않은 백업을 만들 수 있습니다. `INFO persistence`로 rewrite가 끝났는지 확인하고 공식 절차에 맞춰 파일을 복사해야 합니다.
+외부 백업은 DB 백업과 Redis 보관본의 위치·무결성을 확인하고 격리 환경에 복원한 뒤 DB 상태 대조와 재시도를 검증한다. Redis persistence는 원본 DB 백업이나 replica의 대체물이 아니다.
 
-네 번째는 Redis replication을 백업과 동일하게 생각하는 것입니다. replica는 잘못된 `FLUSHALL`이나 동기화된 삭제를 되돌려 주지 않으므로 별도 RDB 보관이 필요합니다.
+## 대안, 제외 범위, 주니어 확인
 
-## 적용 기준과 운영 체크리스트
+Redis를 작업 큐와 영구 상태 저장소로 설계하는 대안은 소비 확인·재처리·보존 기간·장애 조치를 별도로 설계해야 한다. 모든 진행 상태를 DB에만 두는 대안은 단순하지만 잦은 갱신이 DB 부하를 늘릴 수 있다. 이번 범위에서는 Redis Cluster, Sentinel, 관리형 서비스 설정, 완전한 분산 합의 증명은 다루지 않는다. 확정한 경계는 `import_job`은 PostgreSQL, 진행률과 짧은 실행 조율은 Redis라는 것이다.
 
-먼저 Redis에 있는 값마다 “다시 만들 수 있는가, 유실되면 업무가 멈추는가”를 분류합니다. 캐시는 persistence보다 원본 DB와 cache warm-up이 중요할 수 있습니다. 반면 작업 큐나 세션은 유실 허용량, 중복 처리, 만료 정책을 함께 정해야 하며, persistence만 켜고 끝낼 수 없습니다.
+코드 리뷰에서는 네 가지만 먼저 묻는다. 값이 사라져도 다시 만들 수 있는가? “공고를 저장했다”를 이 값으로 결정하는가? lease 만료 뒤 이전 작업자가 아직 실행 중일 수 있는가? 재시작 뒤 어떤 DB 행으로 재개·종료를 정하는가? 마지막 두 질문에는 worker ID 비교 갱신, 갱신 실패 시 중단, 멱등 키, DB 상태 대조가 함께 답이 되어야 한다.
 
-운영 체크리스트는 다음과 같습니다.
-
-- RDB snapshot의 최근 성공 시각과 외부 백업 보관 위치를 확인한다.
-- AOF fsync 정책이 문서의 허용 RPO와 일치하는지 확인한다.
-- `rdb_last_bgsave_status`, `aof_last_bgrewrite_status`와 디스크 여유를 알림으로 만든다.
-- rewrite와 fork 시점의 p99 latency, 메모리 peak, OOM 여부를 기록한다.
-- 새 인스턴스에서 RDB·AOF로 복구한 뒤 key 수와 핵심 업무 데이터를 검증한다.
-
-정리하면 다음과 같습니다.
-
-- RDB는 snapshot 시점의 복구와 백업에 강하고, AOF는 최근 write 보존에 유리합니다.
-- `appendfsync everysec`는 내구성 목표이지 모든 장애에서의 절대 보장은 아닙니다.
-- fork·rewrite·fsync는 데이터 보호와 별개로 latency와 메모리 비용을 만듭니다.
-- Redis persistence는 원본 DB와 외부 백업, 복구 리허설을 대신하지 않습니다.
+실무 규칙은 간단하다. **Redis가 전부 사라진 뒤에도 PostgreSQL `import_job`만으로 다음 행동을 결정할 수 있어야 한다.** 가능하다면 RDB와 AOF는 보조 상태의 복구 편의와 손실 창을 조절한다. 불가능하다면 persistence 옵션보다 원본 상태의 위치와 DB 백업·replica·복구 리허설부터 다시 설계한다.
 
 ## 참고한 공식 문서
 
 - [Redis persistence](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
-- [Redis latency generated by fork and appendfsync](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/)
+- [Redis latency troubleshooting](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/latency/)
