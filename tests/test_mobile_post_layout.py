@@ -6,6 +6,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CSS = (ROOT / "assets/css/style.css").read_text(encoding="utf-8")
 POST_LAYOUT = (ROOT / "_layouts/post.html").read_text(encoding="utf-8")
+DEFAULT_LAYOUT = (ROOT / "_layouts/default.html").read_text(encoding="utf-8")
+HEADER = (ROOT / "_includes/header.html").read_text(encoding="utf-8")
 
 
 def css_rule(source: str, selector: str) -> str:
@@ -38,6 +40,48 @@ class MobilePostLayoutTests(unittest.TestCase):
             rule = css_rule(source, selector)
             self.assertIn("grid-column: auto", rule)
             self.assertIn("grid-row: auto", rule)
+
+    def test_toc_uses_native_disclosure_semantics(self):
+        self.assertIn('<details class="post-toc post-side-card" open>', POST_LAYOUT)
+        self.assertIn("<summary>이 글에서 다루는 내용</summary>", POST_LAYOUT)
+        self.assertIn('aria-label="글 목차"', POST_LAYOUT)
+
+    def test_mobile_reading_type_and_overflow_are_explicit(self):
+        source = mobile_css()
+        post_content = css_rule(source, ".post-content")
+        post_title = css_rule(source, ".post-header h1")
+        code = css_rule(source, ".content pre")
+        self.assertIn("font-size: 16px", post_content)
+        self.assertIn("line-height: 1.75", post_content)
+        self.assertIn("font-size: 30px", post_title)
+        self.assertIn("overflow-x: auto", code)
+        self.assertIn("overflow-wrap: anywhere", CSS)
+
+    def test_mobile_header_is_single_row_and_keeps_core_links(self):
+        source = mobile_css()
+        header_rule = css_rule(source, ".site-header")
+        self.assertIn("min-height: 56px", header_rule)
+        self.assertIn("flex-direction: row", header_rule)
+        self.assertIn('class="site-nav-github"', HEADER)
+        self.assertIn(".site-nav-github", source)
+        self.assertIn("display: none", css_rule(source, ".site-nav-github"))
+
+    def test_focus_touch_and_dark_mode_rules_are_present(self):
+        self.assertIn(":focus-visible", CSS)
+        self.assertIn("min-width: 44px", css_rule(CSS, ".theme-toggle"))
+        self.assertIn("min-height: 44px", css_rule(CSS, ".theme-toggle"))
+        content_selector = (
+            ".content p,\n"
+            ".content li,\n"
+            ".project-card p,\n"
+            ".project-card dd"
+        )
+        self.assertIn("color: var(--muted)", css_rule(CSS, content_selector))
+
+    def test_theme_button_exposes_and_updates_state(self):
+        self.assertIn('aria-pressed="false"', HEADER)
+        self.assertIn('setAttribute("aria-pressed"', DEFAULT_LAYOUT)
+        self.assertIn('setAttribute("aria-label"', DEFAULT_LAYOUT)
 
 
 if __name__ == "__main__":
