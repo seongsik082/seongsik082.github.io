@@ -89,12 +89,27 @@
     </main>
     {% include footer.html %}
     <script>
+      const themeToggle = document.querySelector(".theme-toggle");
       const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") document.documentElement.classList.add("dark");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const useDarkTheme = savedTheme ? savedTheme === "dark" : prefersDark;
 
-      document.querySelector(".theme-toggle")?.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark", useDarkTheme);
+
+      function syncThemeButton() {
+        if (!themeToggle) return;
+        const isDark = document.documentElement.classList.contains("dark");
+        themeToggle.setAttribute("aria-pressed", String(isDark));
+        themeToggle.setAttribute("aria-label", isDark ? "라이트 모드 사용" : "다크 모드 사용");
+      }
+
+      syncThemeButton();
+
+      themeToggle?.addEventListener("click", () => {
         document.documentElement.classList.toggle("dark");
-        localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+        const isDark = document.documentElement.classList.contains("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        syncThemeButton();
       });
 
       const toc = document.querySelector(".post-toc");

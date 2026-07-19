@@ -9,6 +9,7 @@
   --accent: #4068b8;
   --accent-soft: #edf3ff;
   --code-bg: #151515;
+  --inline-code-text: #245ba8;
   --header-bg: rgba(255, 255, 255, 0.94);
 }
 
@@ -20,6 +21,7 @@
   --line: #33363d;
   --accent: #9fb7ee;
   --accent-soft: #31436e;
+  --inline-code-text: #dbe7ff;
   --header-bg: rgba(24, 25, 28, 0.94);
 }
 
@@ -46,6 +48,15 @@ a {
 
 a:hover {
   color: var(--accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .site-footer,
@@ -106,8 +117,11 @@ a:hover {
 }
 
 .theme-toggle {
-  width: 28px;
-  height: 28px;
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 999px;
   background: var(--soft);
@@ -913,13 +927,13 @@ section + section {
 .content li,
 .project-card p,
 .project-card dd {
-  color: #555555;
+  color: var(--muted);
 }
 
 .content code {
   border-radius: 5px;
   background: var(--accent-soft);
-  color: #245ba8;
+  color: var(--inline-code-text);
   padding: 2px 6px;
 }
 
@@ -929,6 +943,14 @@ section + section {
   background: var(--code-bg);
   color: #f7f7f7;
   padding: 20px;
+}
+
+.post-content,
+.post-content p,
+.post-content li,
+.post-content a,
+.post-content code {
+  overflow-wrap: anywhere;
 }
 
 .project-card {
@@ -1103,10 +1125,32 @@ section + section {
 
 @media (max-width: 720px) {
   .site-header {
-    gap: 16px;
-    min-height: auto;
-    padding: 18px 20px;
-    flex-direction: column;
+    gap: 12px;
+    min-height: 56px;
+    padding: 6px 20px;
+    flex-direction: row;
+  }
+
+  .site-logo small {
+    display: none;
+  }
+
+  .site-nav-github {
+    display: none;
+  }
+
+  .site-nav {
+    margin-left: auto;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .site-nav a,
+  .theme-toggle {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
   }
 
   .site-main {
@@ -1167,11 +1211,40 @@ section + section {
   .post-content {
     grid-column: auto;
     grid-row: auto;
+    font-size: 16px;
+    line-height: 1.75;
   }
 
   .post-sidebar {
     grid-column: auto;
     grid-row: auto;
+  }
+
+  .post-header h1 {
+    font-size: 30px;
+  }
+
+  .post-content h2 {
+    margin-top: 36px;
+    font-size: 24px;
+  }
+
+  .post-content h3 {
+    margin-top: 28px;
+    font-size: 20px;
+  }
+
+  .content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .post-tag-list a,
+  .post-nav-card,
+  .related-post-card {
+    min-height: 44px;
   }
 
   .project-card dl,
