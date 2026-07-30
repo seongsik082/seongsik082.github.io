@@ -42,6 +42,7 @@ INCRUIT_SEARCH_URL = "https://job.incruit.com/jobdb_list/searchjob.asp"
 WORKNET_SEARCH_URL = "https://www.work.go.kr/empInfo/empInfoSrch/list/dtlEmpSrchList.do"
 STARTING_LIST_URL = "https://starting.kr/api/jdlist/postings"
 STARTING_DETAIL_URL = "https://app.starting.kr/matching/{public_number}"
+CAREER_AUTO_JOBS_URL = "https://job.career.co.kr/search/auto_jobs"
 
 KEYWORDS = [
     "백엔드",
@@ -54,7 +55,8 @@ KEYWORDS = [
 ]
 
 FALLBACK_SOURCES = ("jumpit", "catch", "incruit", "worknet", "starting")
-AVAILABLE_SOURCES = ("wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES)
+EXTENDED_FALLBACK_SOURCES = ("career",)
+AVAILABLE_SOURCES = ("wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES, *EXTENDED_FALLBACK_SOURCES)
 SCHEDULE_ANCHOR_DATE = date(2026, 7, 30)
 TARGET_INCLUDED_JOBS = 200
 YOUTH_INTERN_SEARCH_TERMS = ["디지털 청년인턴", "IT 청년인턴", "전산 청년인턴"]
@@ -641,6 +643,13 @@ def fetch_json(session: requests.Session, url: str, params: Optional[Dict[str, o
     response = session.get(url, params=params, timeout=20)
     response.raise_for_status()
     return response.json()
+
+
+def fetch_json_post(session: requests.Session, url: str, data: Dict[str, object]) -> Dict[str, object]:
+    response = session.post(url, data=data, timeout=20)
+    response.raise_for_status()
+    payload = response.json()
+    return payload if isinstance(payload, dict) else {}
 
 
 def scan_official_sources(session: requests.Session) -> List[str]:
@@ -1268,6 +1277,118 @@ def collect_incruit_jobs(
                     "공고명": "인크루트 상세 접근 실패",
                     "링크": link,
                     "출처": "Incruit 상세 HTML",
+                    "제외 이유": f"상세 페이지 접근 실패: {exc.__class__.__name__}",
+                    "확인일시": checked_at,
+                }
+            )
+    return collection
+
+
+def career_link(regno: object) -> str:
+    try:
+        return f"https://job.career.co.kr/recruit/view/{int(str(regno))}"
+    except (TypeError, ValueError):
+        return ""
+
+
+def career_text(item: Dict[str, object], field: str) -> str:
+    return html_to_text(item.get(field))
+
+
+def career_location(item: Dict[str, object]) -> str:
+    area = " ".join(
+        part for part in [career_text(item, "area_name"), career_text(item, "area_name2")] if part
+    )
+    work_type = career_text(item, "work_type_name")
+    if area and work_type:
+        return f"{area} / {work_type}"
+    return area or work_type or "미확인"
+
+
+def career_career(item: Dict[str, object]) -> str:
+    years = career_text(item, "career_years")
+    if years:
+        return f"경력 {years}"
+    return career_text(item, "career_name") or "미확인"
+
+
+def collect_career_jobs(
+    session: requests.Session,
+    collect_date: str,
+    checked_at: str,
+    max_details: int,
+    researched_urls: Optional[Set[str]] = None,
+) -> CollectionResult:
+    collection = CollectionResult([], [], 0, 0, {})
+    researched_urls = researched_urls or set()
+    candidates: List[Dict[str, object]] = []
+    seen_ids = set()
+    candidate_limit = max(1, max_details * 3)
+
+    for keyword in platform_search_terms():
+        page = 1
+        while len(candidates) < candidate_limit:
+            payload = fetch_json_post(
+                session,
+                CAREER_AUTO_JOBS_URL,
+                {"keyword": keyword, "page": page, "pagesize": 50},
+            )
+            items = payload.get("list") if isinstance(payload.get("list"), list) else []
+            if not items:
+                break
+            new_ids = 0
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                regno = item.get("regno")
+                link = career_link(regno)
+                if not link or regno in seen_ids:
+                    continue
+                seen_ids.add(regno)
+                new_ids += 1
+                title = career_text(item, "subject")
+                if not listing_has_backend_signal({"title": title}, ["title"]):
+                    continue
+                if was_researched(link, researched_urls):
+                    collection.skipped_researched += 1
+                    continue
+                candidates.append(item)
+                if len(candidates) >= candidate_limit:
+                    break
+            if new_ids == 0:
+                break
+            page += 1
+        if len(candidates) >= candidate_limit:
+            break
+
+    for item in candidates[:max_details]:
+        link = career_link(item.get("regno"))
+        title = career_text(item, "subject") or "미확인"
+        company = career_text(item, "company_name") or "미확인"
+        try:
+            response = session.get(link, timeout=20)
+            response.raise_for_status()
+            result = classify_html_platform_detail("Career", "커리어", link, response.text, checked_at, collect_date)
+            result = enrich_html_classification(
+                result,
+                company=company,
+                title=title,
+                career=career_career(item),
+                location=career_location(item),
+                deadline=career_text(item, "apply_end_dateString") or "상시/미확인",
+                employment_type=career_text(item, "work_type_name"),
+                summary=response.text,
+            )
+            collection.checked += 1
+            append_classification(collection, result, link, "Career", checked_at)
+        except requests.RequestException as exc:
+            collection.checked += 1
+            collection.excluded.append(
+                {
+                    "회사명": company,
+                    "공고명": title,
+                    "링크": link,
+                    "출처": "Career 상세 HTML",
                     "제외 이유": f"상세 페이지 접근 실패: {exc.__class__.__name__}",
                     "확인일시": checked_at,
                 }
@@ -1943,6 +2064,7 @@ def main() -> int:
         "incruit": ("Incruit", collect_incruit_jobs),
         "worknet": ("Worknet", collect_worknet_jobs),
         "starting": ("Starting", collect_starting_jobs),
+        "career": ("Career", collect_career_jobs),
     }
     active_sources = args.sources if args.sources is not None else scheduled_sources(collect_date)
     research_ledger = load_research_ledger(args.research_ledger)
@@ -1997,6 +2119,19 @@ def main() -> int:
             source_summary.append(
                 f"{collectors[source][0]} 보조 수집 후 고유 포함 {selected_job_count(collected_jobs, collect_date)}개 / 목표 {TARGET_INCLUDED_JOBS}개"
             )
+    if args.sources is None and selected_job_count(collected_jobs, collect_date) < TARGET_INCLUDED_JOBS:
+        source_summary.append(
+            f"기존 보조 플랫폼 후 고유 포함 {selected_job_count(collected_jobs, collect_date)}개로 부족: 확장 보조 플랫폼을 목표 {TARGET_INCLUDED_JOBS}개까지 순차 확인"
+        )
+        for source in EXTENDED_FALLBACK_SOURCES:
+            if selected_job_count(collected_jobs, collect_date) >= TARGET_INCLUDED_JOBS:
+                break
+            run_collector(source, fallback=True)
+            source_summary.append(
+                f"{collectors[source][0]} 확장 보조 수집 후 고유 포함 {selected_job_count(collected_jobs, collect_date)}개 / 목표 {TARGET_INCLUDED_JOBS}개"
+            )
+    if args.sources is None and selected_job_count(collected_jobs, collect_date) < TARGET_INCLUDED_JOBS:
+        source_summary.append("고유 적합 공고가 200개 미만: 모든 보조 출처 확인 완료")
     save_research_ledger(args.research_ledger, research_ledger)
 
     research_note = f"상세 조사 이력: 이번 실행 {detail_checked}개 확인 / 기존 조사 공고 {skipped_researched}개 제외"

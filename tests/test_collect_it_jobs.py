@@ -5,10 +5,12 @@ import unittest
 from datetime import datetime
 from pathlib import Path
 from contextlib import redirect_stdout
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import requests
 from openpyxl import load_workbook
+
+import scripts.collect_it_jobs as job_collector
 
 from scripts.collect_it_jobs import (
     CHAT_ID,
@@ -423,6 +425,95 @@ class CollectItJobsTest(unittest.TestCase):
                 self.assertEqual(main(), 0)
 
         self.assertEqual(collect_jumpit.call_count, 0)
+
+    def test_collect_career_jobs_opens_public_detail_before_including(self):
+        self.assertTrue(hasattr(job_collector, "collect_career_jobs"))
+        item = {
+            "regno": 123,
+            "subject": "백엔드 개발자",
+            "company_name": "커리어테스트",
+            "career_years": "2년",
+            "area_name": "부산",
+            "area_name2": "해운대구",
+            "work_type_name": "정규직",
+            "apply_end_dateString": "2026-08-15",
+        }
+        detail = """
+        <html><title>커리어테스트 - 백엔드 개발자 | 커리어</title><body>
+        Spring Boot 기반 API와 서버 개발 업무를 담당합니다. Java, Spring, MySQL을 사용해
+        고객 서비스의 백엔드 기능을 설계하고 운영합니다. 경력 2년 이상인 개발자를 찾으며,
+        REST API를 설계하고 장애를 분석해 안정적인 서비스를 제공할 수 있어야 합니다.
+        동료와 코드 리뷰를 진행하고 배포 자동화와 모니터링을 함께 개선합니다.
+        </body></html>
+        """
+        session = Mock()
+        response = Mock(text=detail)
+        response.raise_for_status.return_value = None
+        session.get.return_value = response
+
+        with patch(
+            "scripts.collect_it_jobs.fetch_json_post", return_value={"list": [item], "Total": 1}, create=True
+        ):
+            result = job_collector.collect_career_jobs(
+                session, "2026-07-30", "2026-07-30 09:00 KST", 1, set()
+            )
+
+        self.assertEqual(len(result.included), 1)
+        self.assertEqual(result.included[0]["회사명"], "커리어테스트")
+        self.assertEqual(result.included[0]["지역/근무형태"], "부산 해운대구 / 정규직")
+        self.assertEqual(result.included[0]["마감일"], "2026-08-15")
+        self.assertIn("/recruit/view/123", session.get.call_args.args[0])
+
+    def test_main_runs_career_only_after_core_fallbacks_are_exhausted_below_target(self):
+        empty = CollectionResult([], [], 0, 0, {})
+        career = CollectionResult(
+            [
+                {
+                    "회사명": f"커리어회사{index}",
+                    "공고명": f"백엔드 개발자 {index}",
+                    "링크": f"https://example.com/career/{index}",
+                    "출처": "Career",
+                    "2년차 적합도": "상",
+                    "우선순위": "상",
+                }
+                for index in range(200)
+            ],
+            [],
+            200,
+            0,
+            {},
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            args = argparse.Namespace(
+                output=Path(tmp) / "it-backend-jobs-2026-07-30.xlsx",
+                max_details=200,
+                sources=None,
+                send_telegram=False,
+                chat_id=CHAT_ID,
+                token_env="TELEGRAM_BOT_TOKEN",
+                memory_path=None,
+                research_ledger=Path(tmp) / "researched.json",
+                delivery_state=Path(tmp) / "delivery.json",
+                force_send=False,
+                quiet=True,
+            )
+            with patch("scripts.collect_it_jobs.parse_args", return_value=args), patch(
+                "scripts.collect_it_jobs.kst_now", return_value=datetime(2026, 7, 30, 9, 0)
+            ), patch("scripts.collect_it_jobs.scan_official_sources", return_value=[]), patch(
+                "scripts.collect_it_jobs.collect_saramin_jobs", return_value=empty
+            ), patch("scripts.collect_it_jobs.collect_jobkorea_jobs", return_value=empty), patch(
+                "scripts.collect_it_jobs.collect_jumpit_jobs", return_value=empty
+            ), patch("scripts.collect_it_jobs.collect_catch_jobs", return_value=empty), patch(
+                "scripts.collect_it_jobs.collect_incruit_jobs", return_value=empty
+            ), patch("scripts.collect_it_jobs.collect_worknet_jobs", return_value=empty), patch(
+                "scripts.collect_it_jobs.collect_starting_jobs", return_value=empty
+            ), patch(
+                "scripts.collect_it_jobs.collect_career_jobs", return_value=career, create=True
+            ) as collect_career:
+                self.assertEqual(main(), 0)
+
+        self.assertEqual(collect_career.call_count, 1)
 
     def test_main_continues_when_one_platform_list_request_fails(self):
         empty = CollectionResult([], [], 0, 0, {})
@@ -1034,7 +1125,10 @@ class CollectItJobsTest(unittest.TestCase):
         self.assertIn("5년 이상", result.excluded["제외 이유"])
 
     def test_parse_source_names_supports_all_and_subset(self):
-        self.assertEqual(parse_source_names("all"), ["wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES])
+        self.assertEqual(
+            parse_source_names("all"),
+            ["wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES, "career"],
+        )
         self.assertEqual(parse_source_names("wanted,jobkorea"), ["wanted", "jobkorea"])
 
     def test_parse_source_names_rejects_unknown_source(self):
