@@ -134,7 +134,7 @@ class CollectItJobsTest(unittest.TestCase):
         self.assertEqual(result.included[0]["주요업무 요약"], "Spring 기반 API 개발 및 운영")
         self.assertEqual(
             parse_source_names("all"),
-            ["wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES],
+            ["wanted", "rallit", "saramin", "jobkorea", *FALLBACK_SOURCES, "career"],
         )
 
     def test_scheduled_sources_uses_three_to_one_platform_cycle(self):
@@ -287,9 +287,9 @@ class CollectItJobsTest(unittest.TestCase):
                 "2년차 적합도": "상",
                 "우선순위": "상",
             }
-            for index in range(20)
+            for index in range(200)
         ]
-        fallback = CollectionResult(fallback_jobs, [], 20, 0, {})
+        fallback = CollectionResult(fallback_jobs, [], 200, 0, {})
 
         with tempfile.TemporaryDirectory() as tmp:
             args = argparse.Namespace(
