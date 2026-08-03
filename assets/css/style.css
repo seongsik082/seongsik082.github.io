@@ -1294,3 +1294,26 @@ section + section {
     flex-direction: column;
   }
 }
+
+
+/* Projects: use the same editorial rhythm as post lists. */
+.project-row {
+  padding: 24px 0;
+}
+
+.project-row .section-label {
+  margin-bottom: 8px;
+}
+
+.project-row .project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .project-row {
+    padding: 22px 0;
+  }
+}
