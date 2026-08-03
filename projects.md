@@ -6,73 +6,74 @@ permalink: /projects/
 
 <section class="page-title">
   <p class="eyebrow">Projects</p>
-  <h1>기능 구현보다 요청 흐름, 데이터, 운영 포인트를 설명할 수 있는 프로젝트를 지향합니다.</h1>
+  <h1>실제 서비스 운영과 개인 프로젝트에서 쌓은 문제 해결 경험을 정리했습니다.</h1>
 </section>
 
 <section class="project-list">
   <article class="project-card">
     <div>
-      <p class="section-label">Project Direction 01</p>
-      <h2>사용자 요청과 데이터 흐름이 명확한 서비스형 프로젝트</h2>
+      <p class="section-label">01 / Web Service Operations</p>
+      <h2>웹서비스 기능 개선 및 운영 안정화</h2>
       <p>
-        단순 CRUD를 넘어서 인증, 게시글, 검색, 알림, 비동기 후처리처럼
-        실제 서비스에서 흐름이 이어지는 프로젝트를 정리하려고 합니다.
-        이 페이지에는 구현 자체보다 어떤 문제를 어떻게 나눠서 해결했는지를 담을 예정입니다.
+        Java/Spring Boot 기반 웹서비스에서 기능 개선, 오류 수정, 테스트와 운영 반영을 수행했습니다.
+        고객 요청을 우선순위에 따라 관리하고, 데이터 조회와 파일 다운로드, 계산 로직의 문제를 개선했습니다.
       </p>
     </div>
     <dl>
-      <dt>보고 싶은 역량</dt>
-      <dd>API 설계, DB 모델링, 인증/인가, 예외 흐름, 배포 자동화</dd>
-      <dt>주요 스택</dt>
-      <dd>Java, Spring Boot, JPA, MySQL, Redis, Docker</dd>
-      <dt>정리할 포인트</dt>
-      <dd>트랜잭션 경계, 캐시 전략, 인덱스 선택, CI/CD 구성, 운영 로그</dd>
+      <dt>담당 범위</dt>
+      <dd>기능 개발, 오류 원인 확인 및 수정, 고객 요청 분석, 테스트, 운영 반영</dd>
+      <dt>기술 스택</dt>
+      <dd>Java, Spring Boot, Tibero, SQL, Git, Jira, Jenkins</dd>
+      <dt>주요 개선</dt>
+      <dd>불필요한 JOIN 제거, 인덱스 키 기준 조건 조정, Apache POI 기반 XLSX 다운로드 전환, 데이터 정합성 검증</dd>
     </dl>
     <div class="link-row">
-      <a href="https://github.com/seongsik082">GitHub</a>
+      <a href="https://portfolio2026-seven-livid.vercel.app">Portfolio</a>
     </div>
   </article>
 
   <article class="project-card">
     <div>
-      <p class="section-label">Project Direction 02</p>
-      <h2>트러블슈팅과 운영 관측이 드러나는 프로젝트</h2>
+      <p class="section-label">02 / Wemate</p>
+      <h2>AI 기반 맞춤형 웹서비스</h2>
       <p>
-        배치 처리, 외부 API 연동, 캐시, 대량 조회처럼
-        장애 원인 분석과 운영 판단 기준을 설명할 수 있는 프로젝트를 우선적으로 남기려 합니다.
+        사용자의 목적에 맞는 결과를 제공하는 웹서비스를 기획하고 개발했습니다.
+        서비스 구조와 UI/UX를 직접 설계하고, 구현과 배포까지 전 과정을 혼자 진행했습니다.
       </p>
     </div>
     <dl>
-      <dt>보고 싶은 역량</dt>
-      <dd>장애 재현, 병목 분석, 재시도 정책, 실패 데이터 추적, 운영 체크리스트</dd>
-      <dt>주요 스택</dt>
-      <dd>Spring Batch, PostgreSQL, Redis, Docker, GitHub Actions</dd>
-      <dt>정리할 포인트</dt>
-      <dd>재시도 정책, 작업 단위 분리, 메트릭 확인, 로그 추적, 롤백 기준</dd>
+      <dt>담당 범위</dt>
+      <dd>서비스 기획, UI/UX 설계, 화면 구현, 사용자 경험 개선, 배포</dd>
+      <dt>개발 방식</dt>
+      <dd>ChatGPT Codex를 개발 과정에 활용해 설계와 구현을 반복 검증</dd>
+      <dt>정리한 포인트</dt>
+      <dd>사용자 목적 중심의 화면 흐름, 서비스 경험 설계, 실제 배포와 운영 관점</dd>
     </dl>
     <div class="link-row">
-      <a href="https://github.com/seongsik082">GitHub</a>
+      <a href="https://marakihau.vercel.app/">Visit Wemate</a>
     </div>
   </article>
 
   <article class="project-card">
     <div>
-      <p class="section-label">How I Write Projects</p>
-      <h2>프로젝트 글은 이런 순서로 정리합니다</h2>
+      <p class="section-label">03 / Personal Portfolio</p>
+      <h2>백엔드 개발자 포트폴리오</h2>
       <p>
-        프로젝트 소개보다 요청 흐름과 문제 해결 과정을 먼저 보여주는 편이
-        백엔드 개발 블로그에 더 맞다고 생각합니다.
+        실무에서 해결한 문제와 기술 적용 경험을 한눈에 볼 수 있도록 React 기반 포트폴리오를 설계했습니다.
+        경력 기술, 기술 경험, 이력서 다운로드와 반응형 화면을 직접 구성하고 Vercel에 배포했습니다.
       </p>
     </div>
     <dl>
-      <dt>1. 문제 정의</dt>
-      <dd>무엇이 느렸는지, 꼬였는지, 운영에서 어떤 신호가 보였는지 적습니다.</dd>
-      <dt>2. 구조 설명</dt>
-      <dd>요청 흐름, DB 구조, 외부 연동 지점을 그림 없이도 이해되게 설명합니다.</dd>
-      <dt>3. 해결 방식</dt>
-      <dd>코드, SQL, 설정, 배포 전략 중 실제로 바꾼 지점을 남깁니다.</dd>
-      <dt>4. 운영 기준</dt>
-      <dd>무엇을 지표로 봤는지, 언제 롤백할지, 어떤 로그를 확인할지 정리합니다.</dd>
+      <dt>기술 스택</dt>
+      <dd>React, TypeScript, Vite, Vercel</dd>
+      <dt>구성</dt>
+      <dd>Technical Experience, Skills, Contact, Resume 다운로드</dd>
+      <dt>정리한 포인트</dt>
+      <dd>대용량 조회 성능 개선, XLSX 다운로드 개선, 계산 로직 정합성, 운영 협업 경험</dd>
     </dl>
+    <div class="link-row">
+      <a href="https://portfolio2026-seven-livid.vercel.app">Visit Portfolio</a>
+      <a href="https://github.com/seongsik082">GitHub</a>
+    </div>
   </article>
 </section>
