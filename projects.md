@@ -4,10 +4,12 @@ title: Projects
 permalink: /projects/
 ---
 
+
 <section class="page-title">
   <p class="eyebrow">Projects</p>
   <h1>실제 서비스 운영과 개인 프로젝트에서 쌓은 문제 해결 경험을 정리했습니다.</h1>
 </section>
+
 
 <section class="project-list">
   <article class="project-card">
@@ -27,10 +29,8 @@ permalink: /projects/
       <dt>주요 개선</dt>
       <dd>불필요한 JOIN 제거, 인덱스 키 기준 조건 조정, Apache POI 기반 XLSX 다운로드 전환, 데이터 정합성 검증</dd>
     </dl>
-    <div class="link-row">
-      <a href="https://portfolio2026-seven-livid.vercel.app">Portfolio</a>
-    </div>
   </article>
+
 
   <article class="project-card">
     <div>
@@ -54,6 +54,7 @@ permalink: /projects/
     </div>
   </article>
 
+
   <article class="project-card">
     <div>
       <p class="section-label">03 / Personal Portfolio</p>
@@ -70,10 +71,3 @@ permalink: /projects/
       <dd>Technical Experience, Skills, Contact, Resume 다운로드</dd>
       <dt>정리한 포인트</dt>
       <dd>대용량 조회 성능 개선, XLSX 다운로드 개선, 계산 로직 정합성, 운영 협업 경험</dd>
-    </dl>
-    <div class="link-row">
-      <a href="https://portfolio2026-seven-livid.vercel.app">Visit Portfolio</a>
-      <a href="https://github.com/seongsik082">GitHub</a>
-    </div>
-  </article>
-</section>
