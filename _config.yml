@@ -18,6 +18,10 @@ social:
   links:
     - "https://github.com/seongsik082"
 
+# github-pages가 기본으로 켜는 jekyll-theme-primer는 assets/css/style.css를 같은 경로로 생성해
+# 이 사이트의 스타일시트를 덮어쓸 수 있다. 레이아웃은 모두 직접 관리하므로 테마를 끈다.
+theme: null
+
 lang: ko-KR
 timezone: Asia/Seoul
 permalink: /posts/:title/
