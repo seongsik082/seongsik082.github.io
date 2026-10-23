@@ -81,6 +81,18 @@ post_files.each do |path|
   excerpt = normalize_text(data["excerpt"])
   errors << "#{file_name}: missing excerpt" if excerpt.empty?
 
+  # docs/writing-guide.md의 반복 금지 규칙 중 기계적으로 잡을 수 있는 것
+  body = File.read(path).sub(/\A---\r?\n.*?\r?\n---\r?\n/m, "")
+  if body.match?(/\A\s*# \S/)
+    errors << "#{file_name}: body starts with an H1; the layout already prints the title"
+  end
+  if body.include?("**대상 독자")
+    errors << "#{file_name}: fixed '대상 독자' line is not allowed (docs/writing-guide.md)"
+  end
+  if body.match?(/^## 1\. 오늘의 주제/)
+    errors << "#{file_name}: fixed numbered outline '## 1. 오늘의 주제' is not allowed (docs/writing-guide.md)"
+  end
+
   tags = Array(data["tags"]).map { |tag| normalize_text(tag) }.reject(&:empty?)
   if tags.empty?
     errors << "#{file_name}: tags must be a non-empty array"

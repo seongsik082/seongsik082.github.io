@@ -29,6 +29,10 @@ permalink: /posts/:title/
 markdown: kramdown
 highlighter: rouge
 
+# 합친 글의 예전 주소(redirect_from)를 새 글로 연결한다. GitHub Pages가 지원하는 플러그인이다.
+plugins:
+  - jekyll-redirect-from
+
 collections:
   projects:
     output: false
@@ -42,3 +46,9 @@ defaults:
 
 exclude:
   - README.md
+  - docs/
+  - scripts/
+  - tests/
+  - Gemfile
+  - Gemfile.lock
+  - .ruby-version

@@ -58,6 +58,8 @@ Ruby 3 계열에서 `webrick` 관련 오류가 나는 경우가 있어 `Gemfile`
 
 ## 글 작성 규칙
 
+주제 선정, 예제 도메인, 글 구조, 사실 규칙은 [docs/writing-guide.md](docs/writing-guide.md)를 따른다. 자동화로 글을 쓸 때도 이 문서를 먼저 읽게 한다.
+
 - 파일명은 `_posts/YYYY-MM-DD-english-slug.md`
 - front matter에는 최소 `title`, `date`, `tags`, `excerpt` 포함
 - 한국어 본문 기준으로 충분한 설명과 예시를 포함
