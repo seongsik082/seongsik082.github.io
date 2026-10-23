@@ -5,8 +5,6 @@ tags: [Java, Generic, Backend]
 excerpt: "회원 프로필 응답 예제로 Java Generic의 T가 무엇인지, Object를 쓸 때 생기는 형변환을 어떻게 줄이는지 초급 수준에서 설명한다."
 ---
 
-# Java Generic을 회원 프로필 응답 코드에서 처음 이해하는 방법
-
 > **부제:** 데이터를 담는 클래스는 하나로 두고, 데이터의 타입은 호출할 때 정하기
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 초급 백엔드 개발자

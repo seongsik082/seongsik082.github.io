@@ -5,8 +5,6 @@ tags: [Spring, Testing, File Upload, Backend]
 excerpt: "프로필 이미지 업로드 예제로 MockMvc와 MockMultipartFile로 파일 part와 JSON part를 함께 테스트하고, part 이름과 Content-Type 오류를 빠르게 찾는 방법을 초급 수준에서 설명한다."
 ---
 
-# MockMvc로 프로필 이미지 multipart 요청을 테스트하는 방법
-
 파일 part와 JSON part가 Controller까지 정확히 도착하는지 확인하기
 
 **대상 독자: Java 문법과 간단한 Spring CRUD를 막 익힌 개발자**

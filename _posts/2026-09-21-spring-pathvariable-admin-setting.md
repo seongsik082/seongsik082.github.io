@@ -5,8 +5,6 @@ tags: [Spring, REST API, Java, Backend]
 excerpt: "관리자 설정 조회 예제로 Spring @PathVariable이 URL의 값과 메서드 파라미터를 연결하는 방법, @RequestParam과 구분하는 기준, 설정 키를 검증하는 위치를 초급 수준에서 설명한다."
 ---
 
-# 관리자 설정 조회 API에서 Spring `@PathVariable`을 쓰는 이유
-
 URL 안의 설정 키를 Controller에서 어떻게 받을까?
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 개발자

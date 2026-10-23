@@ -5,8 +5,6 @@ tags: [Spring, HTTP, File Upload, Backend]
 excerpt: "파일과 설명을 함께 보내는 업로드 API 예제로 JSON 요청과 multipart/form-data의 차이, Spring @RequestPart와 MultipartFile의 역할, Content-Type을 먼저 확인하는 기준을 초급 수준에서 설명한다."
 ---
 
-# 파일 업로드 요청에서 JSON과 multipart/form-data를 구분하는 이유
-
 파일 하나와 설명 JSON을 같은 요청에 보내는 방법
 
 **대상 독자: Java 문법과 간단한 Spring CRUD를 막 익힌 개발자**

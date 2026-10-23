@@ -5,8 +5,6 @@ tags: [Java, Spring, Security, Backend]
 excerpt: "게시글 수정 권한 확인 예제로 Java의 ==와 equals() 차이, null을 안전하게 비교하는 Objects.equals, 요청값으로 작성자를 믿으면 안 되는 이유를 초급 수준에서 설명한다."
 ---
 
-# 게시글 수정 권한에서 String을 `==`로 비교하면 생기는 일
-
 글쓴이 아이디가 같은데도 수정 권한이 없다고 나오는 이유는 무엇일까?
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 개발자

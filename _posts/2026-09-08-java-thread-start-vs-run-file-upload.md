@@ -5,8 +5,6 @@ tags: [Java, Thread, Backend]
 excerpt: "파일 업로드 검사 예제로 Java Thread의 start와 run 차이, 실행 순서가 정해지지 않는 이유, 새 Thread를 직접 만들면 안 되는 상황을 초급 수준에서 설명한다."
 ---
 
-# 파일 업로드 검사에서 Java Thread의 `start()`와 `run()`을 구분하는 방법
-
 파일을 올린 뒤의 작업은 왜 `start()`로 시작해야 할까?
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 개발자

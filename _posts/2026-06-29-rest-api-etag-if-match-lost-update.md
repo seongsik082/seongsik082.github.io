@@ -138,5 +138,6 @@ REST API에서 lost update를 막으려면 DB 내부 락뿐 아니라 HTTP 계�
 같은 리소스를 여러 사용자가 수정할 수 있는 순간, 조건부 쓰기는 선택이 아니라 안전장치에 가깝습니다.
 
 참고한 공식 문서:
+
 - [RFC 9110: If-Match](https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match)
 - [RFC 6585: 428 Precondition Required](https://www.rfc-editor.org/rfc/rfc6585.html#section-3)

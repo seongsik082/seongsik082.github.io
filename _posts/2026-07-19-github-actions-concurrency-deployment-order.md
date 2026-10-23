@@ -29,7 +29,7 @@ PR의 lint, unit test, 정적 분석은 대개 최신 commit만 보면 된다. �
 
 ```yaml
 concurrency:
-  group: ci-pr-${{ github.event.pull_request.number }}
+  group: ci-pr-{% raw %}${{ github.event.pull_request.number }}{% endraw %}
   cancel-in-progress: true
 ```
 
@@ -57,7 +57,7 @@ GitHub Actions concurrency는 같은 group에서 workflow 또는 job 하나만 �
 
 queue가 있어도 commit dispatch 순서가 보장되지는 않는다. 같은 group은 대기를 시작한 시각 기준으로 FIFO지만 runner 할당과 job 준비 시점은 다르다. 순서가 중요하면 승인·release 번호와 이전 배포 완료를 서비스에서도 확인한다.
 
-group 이름은 대소문자를 구분하지 않아 `Prod`, `prod`, `PROD`가 같다. 소문자와 환경 이름을 쓰고, `service-production-${{ github.sha }}`처럼 SHA를 넣어 lock을 무력화하지 않는다.
+group 이름은 대소문자를 구분하지 않아 `Prod`, `prod`, `PROD`가 같다. 소문자와 환경 이름을 쓰고, `service-production-{% raw %}${{ github.sha }}{% endraw %}`처럼 SHA를 넣어 lock을 무력화하지 않는다.
 
 ## 배포 run을 별도로 기록한다
 

@@ -5,8 +5,6 @@ tags: [Spring, REST API, Java, Backend]
 excerpt: "회원 프로필 조회 예제로 Spring @PathVariable의 Long 변환, 숫자가 아닌 ID 요청과 존재하지 않는 회원 요청의 차이, Controller와 Service에서 확인할 위치를 초급 수준에서 설명한다."
 ---
 
-# 회원 프로필 조회에서 숫자가 아닌 `@PathVariable`을 먼저 구분하는 방법
-
 `/members/abc`와 `/members/999`는 왜 같은 “없는 회원”이 아닐까?
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 개발자

@@ -5,8 +5,6 @@ tags: [Spring, HTTP, REST API, Backend]
 excerpt: "예약 생성 API 예제로 200 OK와 201 Created의 의미, Location 헤더가 가리키는 새 리소스, Spring ResponseEntity.created를 사용할 기준을 초급 수준에서 설명한다."
 ---
 
-# 예약 생성 API에서 200 OK 대신 201 Created를 고려하는 이유
-
 새 예약이 만들어졌다는 사실과 조회 위치를 응답에 담는 방법
 
 **대상 독자: Java 문법과 간단한 Spring CRUD를 막 익힌 개발자**

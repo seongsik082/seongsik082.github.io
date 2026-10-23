@@ -117,7 +117,7 @@ source Run 조회 → 기준 snapshot 확인 → 현재 정책·권한 확인
 2. `compare_current` child는 선택한 target revision ID를, baseline 응답은 원본 ID를 모두 반환해야 한다. 평가를 빼면 양쪽 평가 ID는 null이고 score 비교가 없어야 한다.
 3. child가 `queued`가 된 뒤 Policy를 강화한다. worker는 StepLog 전에 `pending_approval` 또는 `blocked_policy_changed`로 바꾸고, 재승인 또는 허용 뒤에만 `running`을 선점해야 한다.
 4. EvaluationCaseRevision 12를 추가한 두 결과는 revision ID가 다르면 동일 기준의 점수 변화로 표시되지 않아야 한다.
-5. backfill하지 못해 기준 revision이 없는 원본은 child를 만들지 않고 409을 주는지 확인한다.
+5. backfill하지 못해 기준 revision이 없는 원본은 child를 만들지 않고 409를 주는지 확인한다.
 
 1번에서 child가 v4를 가리킬 때 첫 확인 지점은 모델 로그가 아니라 source Run과 세 revision ID를 읽는 transaction이다. 3번에서 승인 없이 도구가 실행됐다면 worker의 `queued → running` 선점 직전 정책 조회를 본다.
 

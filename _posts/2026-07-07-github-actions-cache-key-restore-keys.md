@@ -67,9 +67,9 @@ jobs:
             ~/.gradle/caches/modules-2
             ~/.gradle/caches/jars-*
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-jdk21-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/gradle.lockfile') }}
+          key: {% raw %}${{ runner.os }}-gradle-jdk21-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/gradle.lockfile') }}{% endraw %}
           restore-keys: |
-            ${{ runner.os }}-gradle-jdk21-
+            {% raw %}${{ runner.os }}-gradle-jdk21-{% endraw %}
 
       - run: ./gradlew test --no-daemon
 ```

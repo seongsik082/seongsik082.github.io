@@ -139,4 +139,5 @@ probe 엔드포인트를 분리하지 않으면 작은 의존성 지연이 재�
 운영에서는 엔드포인트 분리, 임계치 조정, 배포 전략을 함께 설계하는 편이 가장 안전합니다.
 
 참고한 공식 문서:
+
 - [Kubernetes: Liveness, Readiness, and Startup Probes](https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/)

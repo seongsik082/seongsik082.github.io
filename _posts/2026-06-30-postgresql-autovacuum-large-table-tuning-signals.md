@@ -9,7 +9,7 @@ excerpt: "PostgreSQL autovacuum는 켜져 있기만 하면 끝나는 기능이 �
 
 운영 중인 PostgreSQL에서 테이블 크기가 계속 늘고, 인덱스 효율이 떨어지고, 특정 쿼리만 갑자기 느려졌는데도 "autovacuum는 켜져 있다"는 답만 돌아오는 경우가 있습니다. 설정이 켜져 있으면 자동으로 잘 관리될 것 같지만, 실제로는 갱신량이 큰 테이블이나 파티션 구조, 특정 업데이트 패턴에서는 autovacuum가 늦게 반응할 수 있습니다.
 
-이때 흔한 오해는 두 가지입니다. 첫째, autovacuum가 켜져 있으면 테이블 bloat가 저절로 줄어든다고 생각하는 것입니다. 둘째, 느려졌으니 바로 `VACUUM FULL`을 해야 한다고 생각하는 것입니다. PostgreSQL 공식 문서는 일반적인 목표가 자주 실행되는 표준 `VACUUM`으로 steady state를 유지하는 것이라고 설명하고, `VACUUM FULL`은 `ACCESS EXCLUSIVE` 락이 필요하므로 가능한 피하라고 권장합니다.
+이때 흔한 오해는 두 가지입니다. 첫째, autovacuum가 켜져 있으면 테이블 bloat가 저절로 줄어든다고 생각하는 것입니다. 둘째, 느려졌으니 바로 `VACUUM FULL`을 해야 한다고 생각하는 것입니다. PostgreSQL 공식 문서는 일반적인 목표가 자주 실행되는 표준 `VACUUM`으로 steady state를 유지하는 것이라고 설명하고, `VACUUM FULL`은 `ACCESS EXCLUSIVE` 락이 필요하므로 가능한 한 피하라고 권장합니다.
 
 실무에서 더 중요한 질문은 "왜 이 테이블은 autovacuum가 늦게 잡는가"입니다. 많은 경우 원인은 autovacuum 자체가 꺼져서가 아니라, 테이블 크기와 변경량 대비 기본 기준이 너무 느슨해서 트리거가 늦게 걸리는 데 있습니다.
 

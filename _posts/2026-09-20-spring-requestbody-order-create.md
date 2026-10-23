@@ -5,8 +5,6 @@ tags: [Spring, REST API, Java, Backend]
 excerpt: "주문 생성 요청 예제로 Spring @RequestBody가 JSON을 DTO로 바꾸는 순서, @RequestParam과 구분하는 기준, 요청 DTO를 엔티티와 분리하는 이유를 초급 수준에서 설명한다."
 ---
 
-# 주문 생성 API에서 Spring `@RequestBody`를 DTO로 받는 이유
-
 JSON 주문 요청은 Controller에서 어떻게 Java 객체가 될까?
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 개발자

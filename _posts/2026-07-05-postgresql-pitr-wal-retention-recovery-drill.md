@@ -1,5 +1,5 @@
 ---
-title: "PostgreSQL PITR를 믿고도 복구에 실패하는 팀이 WAL 보관과 복구 리허설을 놓치는 이유"
+title: "PostgreSQL PITR을 믿고도 복구에 실패하는 팀이 WAL 보관과 복구 리허설을 놓치는 이유"
 date: 2026-07-05 08:58:00 +0900
 tags: [PostgreSQL, Database, Backend]
 excerpt: "PostgreSQL PITR은 base backup만 있으면 되는 기능이 아닙니다. 백업 시작 시점까지 이어지는 WAL, 안전한 archive 설정, 정기 복구 리허설이 함께 있어야 실제 장애 때 원하는 시점으로 돌아갈 수 있습니다."

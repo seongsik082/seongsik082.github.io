@@ -126,7 +126,7 @@ COMMIT;
 
 Approval만 commit하면 감사 화면과 실행 가능 상태가 갈라진다. 그래서 Approval·Run·outbox를 같은 transaction에 둔다. `UPDATE`가 0행이면 **ROLLBACK** 뒤 현재 상태를 읽어 409를 만든다. publisher가 죽어도 outbox는 남고, runner는 `UPDATE agent_run SET status='running' WHERE id=:run_id AND status='approved' RETURNING id`가 1행일 때만 시작한다.
 
-## 선택하지 않은 두 가지 방식
+## 선택하지 않은 세 가지 방식
 
 | 방식 | 장점 | 이 글에서 선택하지 않은 이유 |
 | --- | --- | --- |

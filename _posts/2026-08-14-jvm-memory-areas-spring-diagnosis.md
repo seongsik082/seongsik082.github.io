@@ -5,8 +5,6 @@ tags: [Java, JVM, Spring Boot, Operations, Backend]
 excerpt: "Spring 서비스의 메모리 문제를 heap, thread stack, metaspace, direct buffer로 나눠 관찰해야 하는 이유를 정리합니다. JVM MXBean으로 각 영역을 기록하고, OOM과 응답 지연에서 무엇부터 확인할지 실무 순서로 설명합니다."
 ---
 
-# JVM 메모리 영역을 모르면 Spring 서비스의 OOM을 Heap만 보고 오진하는 이유
-
 > **부제:** heap 사용률이 낮아도 컨테이너가 죽을 수 있다. Java 프로세스가 쓰는 메모리를 영역별 책임으로 나누어 읽는 법
 
 **대상 독자:** Spring Boot로 CRUD API를 만들어 봤고, 운영 환경의 `OutOfMemoryError`나 컨테이너 OOMKilled 로그를 처음 마주한 주니어 백엔드 개발자

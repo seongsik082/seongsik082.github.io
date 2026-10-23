@@ -128,5 +128,6 @@ Price price = CompletableFuture
 핵심은 `CompletableFuture` 문법보다 "어떤 작업을 어떤 풀에서 돌리는가"입니다.
 
 참고한 공식 문서:
+
 - [CompletableFuture Javadoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html)
 - [ForkJoinPool Javadoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ForkJoinPool.html)

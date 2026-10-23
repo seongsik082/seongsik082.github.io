@@ -9,10 +9,10 @@ SEOUL_OFFSET = "+09:00"
 
 def extract_front_matter(path)
   text = File.read(path)
-  match = text.match(/\A---\n(.*?)\n---\n/m)
+  match = text.match(/\A---\r?\n(.*?)\r?\n---\r?\n/m)
   return nil unless match
 
-  YAML.load(match[1]) || {}
+  YAML.safe_load(match[1], permitted_classes: [Time, Date, DateTime]) || {}
 end
 
 def normalize_text(value)

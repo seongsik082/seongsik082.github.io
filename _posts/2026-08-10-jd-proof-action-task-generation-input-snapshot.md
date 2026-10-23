@@ -28,7 +28,7 @@ JD Proof 화면에서 사용자는 공고 하나와 포트폴리오 프로젝트
 
 `action_task_generation`에는 `MatchScore`의 숫자만 넣지 않는다. 선택한 `job_post_id`, `project_id`, 매칭 결과 ID, `reason_json`에서 찾은 Requirement·Evidence 식별자, `Evidence.verified` 값, 서버가 선택한 생성 규칙 버전으로 canonical JSON을 만든 뒤 `input_hash`를 저장한다. canonical JSON은 같은 의미의 입력이 항상 같은 순서와 형식으로 직렬화된 값이다. 이 hash는 원문을 복구하거나 진실을 증명하는 값이 아니라, “이번 제안이 어느 입력에서 나왔는가”를 비교하는 표식이다.
 
-기존 행이 있으면 `requirement_id`를 즉시 `NOT NULL`로 더면 migration이 실패할 수 있다. 먼저 nullable 열과 `(id, job_post_id)` 복합 unique 제약을 추가하고 기존 ActionTask를 보정한 뒤, 외래 키와 `NOT NULL`을 적용한다. 아래는 그 뒤의 목표 스키마다.
+기존 행이 있으면 `requirement_id`를 즉시 `NOT NULL`로 두면 migration이 실패할 수 있다. 먼저 nullable 열과 `(id, job_post_id)` 복합 unique 제약을 추가하고 기존 ActionTask를 보정한 뒤, 외래 키와 `NOT NULL`을 적용한다. 아래는 그 뒤의 목표 스키마다.
 
 ```sql
 ALTER TABLE requirement

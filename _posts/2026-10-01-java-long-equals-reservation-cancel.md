@@ -5,8 +5,6 @@ tags: [Java, Spring, Security, Backend]
 excerpt: "예약 취소 권한 확인 예제로 Long과 long의 차이, Long ID를 == 대신 Objects.equals로 비교해야 하는 이유, null과 인증 값을 다루는 기준을 초급 수준에서 설명한다."
 ---
 
-# 예약 취소 권한에서 Long ID를 ==로 비교하면 생기는 일
-
 예약 ID가 같은데도 취소 권한이 없다고 나오는 이유
 
 **대상 독자: Java 문법과 간단한 Spring CRUD를 막 익힌 개발자**

@@ -1,16 +1,18 @@
-title: "김성식 기술 블로그"
-description: "Java, Spring, Database, API, 운영 이슈를 백엔드 개발자 관점에서 정리하는 기술 블로그입니다."
+title: "김성식 · 백엔드 개발자"
+description: "Java/Spring Boot 웹서비스를 1년 10개월간 개선하고 운영한 백엔드 개발자 김성식의 포트폴리오 겸 기술 블로그입니다."
 url: "https://seongsik082.github.io"
 baseurl: ""
 repository: "seongsik082/seongsik082.github.io"
-image: "/assets/images/posts-hero.png"
+image: "/assets/images/posts-hero.jpg"
 author:
   name: "김성식"
-  role: "Backend Developer"
+  role: "Java/Spring Backend Developer"
   email: "tjdtlr991210@gmail.com"
   github: "seongsik082"
   github_url: "https://github.com/seongsik082"
-  focus: "Java, Spring Boot, Database, Observability"
+  resume_url: "https://portfolio2026-seven-livid.vercel.app/seongsik-resume.pdf"
+  portfolio_url: "https://portfolio2026-seven-livid.vercel.app"
+  focus: "Java, Spring Boot, SQL, Tibero"
 
 social:
   links:

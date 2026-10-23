@@ -1,0 +1,75 @@
+# 첫 화면, About, Projects가 함께 쓰는 경력·프로젝트 정보.
+# 문구를 고칠 때는 이 파일만 바꾸면 세 페이지에 같이 반영됩니다.
+
+career:
+  company: "CubiantWith"
+  team: "웹개발 SI팀"
+  period: "2024.05 – 2026.02"
+  duration: "1년 10개월"
+  role: "Java/Spring Boot 웹서비스 기능 개선 · 운영 · 유지보수"
+  stack: "Java · Spring Boot · Tibero · JSP · Git · Jira · Jenkins"
+  duties:
+    - "고객 요청을 분석해 기능 개선과 오류 수정 범위를 정하고, 테스트 후 운영에 반영했습니다."
+    - "대용량 조회 쿼리와 엑셀 다운로드처럼 데이터가 늘어날수록 드러나는 성능·안정성 문제를 개선했습니다."
+    - "인프라 담당자와 협업해 WAS 설정 같은 운영 이슈를 점검하고 서비스를 복구했습니다."
+
+highlights:
+  - label: "PERFORMANCE"
+    title: "대용량 데이터 조회 성능 개선"
+    summary: "대용량 조회 쿼리의 병목을 분석하고 JOIN 조건을 조정해 조회 성능을 개선했습니다."
+    problem: "대용량 데이터를 조회할 때 실행 시간이 길어져 업무 처리 지연이 발생했습니다."
+    approach: "불필요한 JOIN을 제거하고, 인덱스가 적용되는 키 기준으로 조건을 조정했습니다."
+    result: "조회 성능을 개선해 대용량 데이터 처리 시간을 단축했습니다."
+    stack: "SQL Query Analysis · Java · Spring Boot · Tibero"
+  - label: "FILE EXPORT"
+    title: "대용량 엑셀 다운로드 개선"
+    summary: "행 수 제한으로 실패하던 XLS 다운로드를 XLSX 방식으로 전환해 안정성을 높였습니다."
+    problem: "데이터가 많아지면 XLS 최대 행 수를 초과해 파일 다운로드가 실패했습니다."
+    approach: "JExcelAPI 로직을 Apache POI 기반 XLSX 다운로드 방식으로 전환했습니다."
+    result: "100MB 이상 파일도 안정적으로 생성하고 다운로드할 수 있게 되었습니다."
+    stack: "File Export · Java · Apache POI"
+  - label: "DATA QUALITY"
+    title: "데이터 정합성 검증 및 계산 로직 개선"
+    summary: "과거와 현재 데이터의 결과 차이를 분석하고 계산 기준과 로직을 개선했습니다."
+    problem: "같은 기준의 과거 데이터와 현재 데이터에서 계산 결과가 다르게 나타났습니다."
+    approach: "계산 로직과 데이터 기준을 점검하고 불일치 원인을 수정했습니다."
+    result: "수정 전후 결과를 비교해 고객이 원하는 결과가 나오는지 검증했습니다."
+    stack: "Logic Review · Java · Spring Boot · Tibero"
+  - label: "OPERATIONS"
+    title: "운영 안정화와 협업 대응"
+    summary: "고객 요청의 우선순위를 관리하고 인프라 담당자와 협업해 운영 이슈를 해결했습니다."
+    problem: "기능 수정 5건과 오류 수정 15건이 동시에 접수돼 우선순위 관리가 필요했습니다."
+    approach: "요청을 기한과 영향도 기준으로 관리하고 담당자와 작업 일정을 조율했습니다."
+    result: "404 오류 발생 후 WAS 설정을 점검·수정해 서비스를 정상 복구했습니다."
+    stack: "Service Operations · Git · Jira · Jenkins"
+
+skills:
+  - level: "Strong"
+    items: ["Java", "Spring Boot", "SQL", "Tibero"]
+  - level: "Knowledgeable"
+    items: ["JSP", "JavaScript", "HTML", "CSS", "Git", "Jira", "Jenkins"]
+  - level: "Etc"
+    items: ["MariaDB", "MySQL", "MSSQL", "REST API"]
+
+projects:
+  - label: "PERSONAL PROJECT"
+    title: "Wemate · AI 기반 맞춤형 웹서비스"
+    summary: "사용자 목적에 맞는 결과를 제공하는 웹서비스를 기획하고, UI/UX 설계부터 구현과 배포까지 전 과정을 직접 진행했습니다."
+    stack: "React · TypeScript · Vite · Supabase · Vercel"
+    links:
+      - label: "서비스 보기"
+        url: "https://marakihau.vercel.app/"
+  - label: "PERSONAL PORTFOLIO"
+    title: "백엔드 개발자 포트폴리오"
+    summary: "실무에서 해결한 문제와 기술 적용 경험을 읽기 쉽게 정리한 React 기반 포트폴리오를 설계하고 배포했습니다."
+    stack: "React · TypeScript · Vercel"
+    links:
+      - label: "포트폴리오 보기"
+        url: "https://portfolio2026-seven-livid.vercel.app"
+  - label: "TECH BLOG"
+    title: "기술 블로그 운영과 글 검증 자동화"
+    summary: "GitHub Pages와 Jekyll로 이 블로그를 직접 구성했습니다. 파일명·front matter·중복 제목·미래 날짜를 검사하는 스크립트와 최근 글과 겹치지 않게 주제를 추천하는 스크립트를 만들어 꾸준히 기록하고 있습니다."
+    stack: "Jekyll · GitHub Pages · Ruby · Shell"
+    links:
+      - label: "저장소 보기"
+        url: "https://github.com/seongsik082/seongsik082.github.io"

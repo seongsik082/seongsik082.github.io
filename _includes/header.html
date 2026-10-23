@@ -1,11 +1,12 @@
 <header class="site-header">
   <a class="site-logo" href="{{ '/' | relative_url }}">
     <span>SEONGSIK</span>
-    <small>backend notes</small>
+    <small>backend developer</small>
   </a>
   <nav class="site-nav" aria-label="Main navigation">
-    <a href="{{ '/posts/' | relative_url }}">Posts</a>
-    <a href="{{ '/projects/' | relative_url }}">Projects</a>
+    <a href="{{ '/projects/' | relative_url }}"{% if page.url == '/projects/' %} aria-current="page"{% endif %}>Projects</a>
+    <a href="{{ '/posts/' | relative_url }}"{% if page.url == '/posts/' or page.layout == 'post' %} aria-current="page"{% endif %}>Posts</a>
+    <a href="{{ '/about/' | relative_url }}"{% if page.url == '/about/' %} aria-current="page"{% endif %}>About</a>
     <a class="site-nav-github" href="https://github.com/{{ site.author.github }}">GitHub</a>
     <button class="theme-toggle" type="button" aria-label="다크 모드 사용" aria-pressed="false">◐</button>
   </nav>

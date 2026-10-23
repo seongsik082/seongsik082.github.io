@@ -15,7 +15,7 @@ lock wait timeout은 “이 문장이 잠금을 기다리다 정해진 시간을
 
 PostgreSQL의 `lock_timeout`은 테이블·인덱스·행·기타 DB 객체의 잠금 획득을 기다린 시간이 기준을 넘으면 문장을 중단합니다. 각 잠금 획득 시도에 별도로 적용되며, 문장 전체 실행 시간이 아닙니다. `statement_timeout`은 문장 전체 실행 시간에 대한 제한이므로 두 설정을 같은 의미로 보면 안 됩니다.
 
-`deadlock_timeout`도 별도 역할을 합니다. 서버가 잠금을 기다린 뒤 deadlock 검사를 시작하기까지 기다리는 시간이며, `log_lock_waits`가 켜져 있을 때 lock wait 로그가 남기기까지의 기준으로도 사용됩니다. 따라서 lock timeout이 발생했다고 해서 항상 deadlock인 것은 아닙니다. 실제 deadlock은 PostgreSQL이 그래프를 검사해 `deadlock detected`로 별도 보고하고 한 트랜잭션을 중단합니다.
+`deadlock_timeout`도 별도 역할을 합니다. 서버가 잠금을 기다린 뒤 deadlock 검사를 시작하기까지 기다리는 시간이며, `log_lock_waits`가 켜져 있을 때 lock wait 로그를 남기기까지의 기준으로도 사용됩니다. 따라서 lock timeout이 발생했다고 해서 항상 deadlock인 것은 아닙니다. 실제 deadlock은 PostgreSQL이 그래프를 검사해 `deadlock detected`로 별도 보고하고 한 트랜잭션을 중단합니다.
 
 ## 세션과 대기 대상을 먼저 본다
 

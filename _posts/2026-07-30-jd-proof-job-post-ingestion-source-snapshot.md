@@ -35,7 +35,7 @@ Location: /job-posts/jp_01/ingestions/ing_01
 { "jobPostId": "jp_01", "ingestionId": "ing_01", "status": "received" }
 ```
 
-파일 업로드도 같은 응답을 쓴다. 서버는 `Idempotency-Key`와 request hash를 저장해 같은 사용자·key·요청에는 같은 `ingestionId`를, 다른 입력에는 409을 돌려준다. 상태 API는 `received`부터 `ready`·`rejected`·`failed`까지를 보여 주되 내부 예외나 원문은 반환하지 않는다.
+파일 업로드도 같은 응답을 쓴다. 서버는 `Idempotency-Key`와 request hash를 저장해 같은 사용자·key·요청에는 같은 `ingestionId`를, 다른 입력에는 409를 돌려준다. 상태 API는 `received`부터 `ready`·`rejected`·`failed`까지를 보여 주되 내부 예외나 원문은 반환하지 않는다.
 
 ## JobPost에는 현재 화면을, 별도 행에는 근거를 둔다
 
@@ -83,7 +83,7 @@ ALTER TABLE requirement ADD CONSTRAINT requirement_extraction_same_post
 
 `job_post_source`는 받은 원본의 **스냅샷**이다. URL 수집도 얻은 바이트를 서버가 만든 object key에 보관하고 SHA-256을 계산한다. `requested_url`은 추적용이며 원문 재구성 수단이 아니다.
 
-`job_post_ingestion`이 202 응답의 `ingestionId`와 재시도 계약을 실제로 저장한다. `(actor_id, idempotency_key)`가 이미 있으면 서버는 request hash를 비교해 같을 때만 기존 결과를 반환하고, 다르면 409으로 끝낸다. `(source_id, job_post_id)` 복합 FK는 다른 공고의 source를 연결하는 실수를 막는다. 같은 바이트를 다른 key로 다시 접수하면 source는 공유될 수 있고 ingestion 이력은 둘 다 남는다.
+`job_post_ingestion`이 202 응답의 `ingestionId`와 재시도 계약을 실제로 저장한다. `(actor_id, idempotency_key)`가 이미 있으면 서버는 request hash를 비교해 같을 때만 기존 결과를 반환하고, 다르면 409로 끝낸다. `(source_id, job_post_id)` 복합 FK는 다른 공고의 source를 연결하는 실수를 막는다. 같은 바이트를 다른 key로 다시 접수하면 source는 공유될 수 있고 ingestion 이력은 둘 다 남는다.
 
 `job_post_extraction`은 같은 원본을 어떤 버전으로 텍스트화했는지 기록한다. 추출기를 고친 뒤 새 `extractor_version` 결과를 추가할 수 있다. `ready`가 아니면 `normalized_text`는 NULL이고, ready일 때만 본문이 있어야 한다. `JobPost.current_extraction_id`는 transaction에서 같은 공고의 `status='ready'` 행만 선택하도록 갱신한다. 기본 요구사항 API는 이 값을 쓰고, 과거 추출 조회도 `?extractionId=`가 같은 공고의 ready 행인지 검사한다.
 
@@ -130,12 +130,12 @@ PDF가 안전한 텍스트만 담는 것은 아니다. 추출 프로세스에는
 구현을 시작하면 모델 품질보다 아래 다섯 가지를 먼저 통합 테스트로 확인한다.
 
 1. URL과 파일 요청 모두 같은 형식의 `202`, `jobPostId`, `ingestionId`, 상태 조회 URL을 돌려주고, 요구사항이 준비되기 전에는 `GET /job-posts/:id/requirements`가 빈 성공 결과로 가장하지 않는지 확인한다.
-2. 같은 Idempotency-Key·같은 요청을 두 번 보내도 ingestion 행과 source 행이 하나만 생기는지, 같은 key에 다른 URL을 넣으면 새 작업을 만들지 않고 409을 주는지 확인한다.
+2. 같은 Idempotency-Key·같은 요청을 두 번 보내도 ingestion 행과 source 행이 하나만 생기는지, 같은 key에 다른 URL을 넣으면 새 작업을 만들지 않고 409를 주는지 확인한다.
 3. allowlist 밖 host, `http` URL, redirect 응답은 gateway 호출 전에 `rejected`인지 확인한다. resolver가 검사 뒤 private·link-local 주소를 돌려주는 DNS rebinding 상황도 gateway가 연결을 거부해야 한다. 이 실패의 **첫 확인 지점은 파서가 아니라 URL validator와 egress 규칙**이다.
 4. PDF가 아닌 바이트에 PDF Content-Type만 붙인 파일, 크기 제한을 넘는 파일, 사용자 경로처럼 보이는 파일명을 각각 올린다. stored object key가 서버 생성값인지, 추출 queue에 들어가지 않는지 검사한다.
 5. 같은 원본을 extractor v1·v2로 처리해 source는 하나, extraction은 두 개인지와 각 Requirement의 `extraction_id`를 확인한다. v2를 현재 화면으로 선택해도 v1 매칭 근거가 덮어써지면 안 된다.
 
-JD Proof에서 공고 수집의 완료는 화면에 제목 하나를 보여 주는 시점이 아니다. 요청을 다시 보내도 같은 작업으로 묶이고, 파서가 읽은 원문을 식별할 수 있으며, 안전하지 않은 URL·파일은 추출 전에 멈춰야 한다. 주니어 개발자가 첫 구현에서 지킬 기준은 세 가지면 충분하다. `JobPost`에 원문을 덮어쓰지 말 것, 202을 완료로 표시하지 말 것, 외부 URL과 파일을 신뢰된 입력처럼 다루지 말 것.
+JD Proof에서 공고 수집의 완료는 화면에 제목 하나를 보여 주는 시점이 아니다. 요청을 다시 보내도 같은 작업으로 묶이고, 파서가 읽은 원문을 식별할 수 있으며, 안전하지 않은 URL·파일은 추출 전에 멈춰야 한다. 주니어 개발자가 첫 구현에서 지킬 기준은 세 가지면 충분하다. `JobPost`에 원문을 덮어쓰지 말 것, 202를 완료로 표시하지 말 것, 외부 URL과 파일을 신뢰된 입력처럼 다루지 말 것.
 
 ## 참고한 공식 문서
 

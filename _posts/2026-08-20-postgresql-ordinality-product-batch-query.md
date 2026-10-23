@@ -5,8 +5,6 @@ tags: [Java, PostgreSQL, SQL, Performance, Backend]
 excerpt: "여러 상품 ID를 한 번에 조회할 때 입력 순서를 PostgreSQL WITH ORDINALITY와 ORDER BY로 보장하는 방법을 정리합니다. Java Map 재조립 방식과 비교해 입력 크기, 누락 상품, 중복 의미, 쿼리 비용을 어디에서 판단할지 설명합니다."
 ---
 
-# 상품 ID 대량 조회에서 DB 반환 순서에 기대면 API 응답 계약이 깨지는 이유
-
 > **부제:** 요청 순서는 데이터가 아니라 계약이다. PostgreSQL `WITH ORDINALITY`와 Java 조립 중 책임질 계층을 선택하는 법
 
 **대상 독자:** Spring Boot와 PostgreSQL로 조회 API를 만들고 있으며, 여러 ID를 한 번에 조회한 결과를 요청 순서대로 돌려줘야 하는 백엔드 개발자

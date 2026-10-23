@@ -2,20 +2,21 @@
   <div class="footer-grid">
     <div>
       <strong>{{ site.author.name }}</strong>
-      <p>Java, Spring, Database, 운영 이슈를 기록하는 백엔드 개발 블로그</p>
+      <p>Java/Spring Boot 웹서비스를 개선하고 운영해 온 백엔드 개발자입니다. 실무에서 배운 것과 공부한 것을 이곳에 기록합니다.</p>
     </div>
     <div>
       <strong>Focus</strong>
       <p>{{ site.author.focus }}</p>
     </div>
     <div>
-      <strong>Links</strong>
+      <strong>Contact</strong>
       <p>
+        <a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a><br>
         <a href="https://github.com/{{ site.author.github }}">GitHub</a>
         ·
-        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+        <a href="{{ site.author.resume_url }}">Resume</a>
         ·
-        <a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a>
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
       </p>
     </div>
   </div>

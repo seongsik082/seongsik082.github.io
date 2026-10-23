@@ -5,8 +5,6 @@ tags: [Java, Optional, Backend]
 excerpt: "단건 상품 조회에서 null 대신 Optional을 받고, 값이 없을 때 이유가 분명한 예외를 만드는 방법을 초급 Java 코드로 설명한다."
 ---
 
-# Java Optional로 상품을 찾지 못했을 때 분기하는 방법
-
 > **부제:** 값이 없을 수 있다는 사실을 메서드 반환값에 드러내기
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 초급 백엔드 개발자

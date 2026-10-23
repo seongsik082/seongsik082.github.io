@@ -128,5 +128,6 @@ Prometheus에서 위험한 것은 메트릭 개수보다 고유한 시계열 개
 좋은 메트릭은 더 많은 데이터를 남기는 메트릭이 아니라, 더 적은 비용으로 더 빠른 판단을 가능하게 하는 메트릭입니다.
 
 참고한 공식 문서:
+
 - [Prometheus Best Practices: Metric and label naming](https://prometheus.io/docs/practices/naming/)
 - [Prometheus Best Practices: Instrumentation](https://prometheus.io/docs/practices/instrumentation/)

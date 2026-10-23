@@ -8,7 +8,7 @@
     {% assign author_profile = site.author.github_url | default: site.url %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    <title>{% if page.title and page.url != '/' %}{{ page.title }} | {% endif %}{{ site.title }}</title>
     <meta name="description" content="{{ meta_description }}">
     <meta name="author" content="{{ site.author.name }}">
     <meta name="theme-color" content="#5277c4">
@@ -80,6 +80,7 @@
         {% endif %}
       }
     </script>
+    <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   </head>
   <body class="layout-{{ page.layout | default: 'page' }}">

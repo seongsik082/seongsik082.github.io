@@ -142,6 +142,7 @@ idempotency key를 도입하더라도 이 간격은 자동으로 사라지지 �
 결제, 주문, 포인트 같은 비가역 작업일수록 이 설계를 미루지 않는 편이 안전합니다.
 
 참고한 공식 문서:
+
 - [RFC 9110: Idempotent Methods](https://www.rfc-editor.org/rfc/rfc9110.html#name-idempotent-methods)
 - [AWS Builders' Library: Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)
 - [Stripe API: Idempotent requests](https://docs.stripe.com/api/idempotent_requests)

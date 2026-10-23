@@ -16,6 +16,7 @@ Java, Spring, Database, API, 운영 이슈를 백엔드 개발자 관점에서 �
 ## 주요 파일
 
 - `_posts/`: 날짜별 기술 포스트
+- `_data/portfolio.yml`: 경력, 실무 사례, 기술 스택, 개인 프로젝트 (첫 화면·About·Projects가 함께 사용)
 - `index.md`: 첫 화면
 - `archive.md`: 전체 글 목록과 필터
 - `about.md`: 블로그 소개

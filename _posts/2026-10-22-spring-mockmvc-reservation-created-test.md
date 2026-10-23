@@ -5,8 +5,6 @@ tags: [Spring, Testing, HTTP, Backend]
 excerpt: "예약 생성 API를 MockMvc로 테스트하는 예제로 201 Created, Location 헤더, 응답 본문의 예약 ID를 함께 검증해야 하는 이유와 초급 개발자가 먼저 확인할 기준을 설명한다."
 ---
 
-# 예약 생성 API 테스트에서 201 Created와 Location을 함께 확인하는 이유
-
 저장됐다는 말만 믿지 않고 HTTP 응답의 약속까지 확인하기
 
 **대상 독자: Java 문법과 간단한 Spring CRUD를 막 익힌 개발자**
@@ -90,7 +88,7 @@ class ReservationControllerTest {
 
 ### 1) 상태 코드만 확인하는 경우
 
-현상은 테스트가 201인지 통과하지만 Location이 없거나 잘못된 주소여도 알아채지 못하는 것이다. 원인은 생성 API의 약속을 상태 코드 하나로만 봤기 때문이다. 첫 확인 지점은 `andExpect` 목록이다. 새 리소스 조회 주소를 응답에 제공한다면 `header().string` 검사도 추가한다.
+현상은 테스트가 201인지만 보고 통과하지만 Location이 없거나 잘못된 주소여도 알아채지 못하는 것이다. 원인은 생성 API의 약속을 상태 코드 하나로만 봤기 때문이다. 첫 확인 지점은 `andExpect` 목록이다. 새 리소스 조회 주소를 응답에 제공한다면 `header().string` 검사도 추가한다.
 
 ### 2) Location에 요청 값이나 임의 번호를 쓰는 경우
 

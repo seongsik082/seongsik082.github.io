@@ -5,8 +5,6 @@ tags: [Java, Collection, Map, Backend]
 excerpt: "예약 번호로 출석 상태를 빠르게 찾는 예제로 Java Map의 키·값, put, get, getOrDefault와 없는 키 처리 기준을 설명한다."
 ---
 
-# Java Map으로 예약 번호에 맞는 출석 상태 찾기
-
 > **부제:** 순서대로 찾지 말고, 찾을 기준이 있다면 키와 값으로 연결하기
 
 **대상 독자:** Java 문법과 간단한 Spring CRUD를 막 익힌 초급 백엔드 개발자

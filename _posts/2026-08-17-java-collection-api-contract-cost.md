@@ -5,8 +5,6 @@ tags: [Java, Collection, API, Performance, Backend]
 excerpt: "상품 ID 목록을 조회하는 Spring API에서 List, Set, Map을 어떤 책임으로 나눠야 하는지 정리합니다. 입력 순서·중복·조회 비용·동시성 범위를 분리하면 Collection 선택이 구현 취향이 아니라 API 계약과 운영 비용의 판단이 됩니다."
 ---
 
-# Java Collection 선택을 미루면 상품 조회 API의 중복 제거와 응답 순서가 함께 깨지는 이유
-
 > **부제:** `List`, `Set`, `Map`은 문법 선택이 아니라 입력 계약·조회 비용·공유 범위를 나누는 도구다
 
 **대상 독자:** Java와 Spring Boot로 조회 API를 작성해 봤고, “중복을 없애려면 Set이면 되지 않을까?”라는 판단을 서비스 요구사항과 연결하고 싶은 백엔드 개발자

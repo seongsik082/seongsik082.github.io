@@ -111,5 +111,6 @@ JSON API 중심 서버라면 `spring.jpa.open-in-view=false`를 기본값 후보
 실무에서는 "편하게 동작한다"보다 "쿼리 경계가 보이는가"가 더 중요한 기준이 됩니다.
 
 참고한 공식 문서:
+
 - [Spring Boot SQL Databases: Open EntityManager in View](https://docs.spring.io/spring-boot/reference/data/sql.html#data.sql.jpa-and-spring-data.open-entity-manager-in-view)
 - [Spring Framework OpenEntityManagerInViewFilter Javadoc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/jpa/support/OpenEntityManagerInViewFilter.html)
